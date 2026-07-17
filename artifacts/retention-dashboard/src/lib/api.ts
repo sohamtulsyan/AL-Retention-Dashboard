@@ -1,6 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+// The FastAPI base URL is stored in localStorage (configurable via Settings page).
+// All requests are routed through the Express proxy at /api/fastapi-proxy/* to avoid
+// CORS preflight failures — the proxy calls FastAPI server-to-server.
+const PROXY_BASE = '/api/fastapi-proxy';
+
 export const getApiUrl = () => {
   if (typeof window === 'undefined') return 'http://localhost:8000';
   return localStorage.getItem('retention_api_url') || 'http://localhost:8000';
@@ -10,29 +15,34 @@ export const setApiUrl = (url: string) => {
   localStorage.setItem('retention_api_url', url);
 };
 
+// For <img src="..."> tags where we can't set headers, pass the FastAPI URL as _target param.
 export const getChartUrl = (name: string) => {
-  return `${getApiUrl().replace(/\/$/, '')}/api/v1/artifacts/charts/${name}`;
+  const target = encodeURIComponent(getApiUrl().replace(/\/$/, ''));
+  return `${PROXY_BASE}/api/v1/artifacts/charts/${name}?_target=${target}`;
 };
 
 async function fetcher(endpoint: string, options: RequestInit = {}) {
-  const baseUrl = getApiUrl().replace(/\/$/, '');
+  const fastapiUrl = getApiUrl().replace(/\/$/, '');
+  const url = `${PROXY_BASE}${endpoint}`;
+
   try {
-    const res = await fetch(`${baseUrl}${endpoint}`, {
+    const res = await fetch(url, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        'X-Target-Url': fastapiUrl,
         ...options.headers,
       },
     });
-    
+
     if (!res.ok) {
       const errorText = await res.text().catch(() => 'Unknown Error');
       throw new Error(`API Error: ${res.status} - ${errorText}`);
     }
-    
+
     // For 204 No Content
     if (res.status === 204) return null;
-    
+
     return res.json();
   } catch (error) {
     console.error(`API Fetch Error [${endpoint}]:`, error);
@@ -82,7 +92,7 @@ export const useConfig = () => {
 export const useUpdateConfig = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Partial<Config>) => 
+    mutationFn: (data: Partial<Config>) =>
       fetcher('/api/v1/config', {
         method: 'PATCH',
         body: JSON.stringify(data),
@@ -93,7 +103,7 @@ export const useUpdateConfig = () => {
     },
     onError: (err: Error) => {
       toast.error('Failed to update config: ' + err.message);
-    }
+    },
   });
 };
 
@@ -107,7 +117,7 @@ export const useJobs = (limit = 20) => {
       if (!data) return false;
       const hasActive = data.some(j => j.status === 'pending' || j.status === 'running');
       return hasActive ? 3000 : false;
-    }
+    },
   });
 };
 
@@ -120,17 +130,17 @@ export const useJob = (id: string) => {
       const data = query.state.data;
       if (!data) return false;
       return (data.status === 'pending' || data.status === 'running') ? 3000 : false;
-    }
+    },
   });
 };
 
 export const useCreateJob = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: { type: string, params?: any }) => 
+    mutationFn: (data: { type: string; params?: any }) =>
       fetcher('/api/v1/jobs', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
@@ -138,7 +148,7 @@ export const useCreateJob = () => {
     },
     onError: (err: Error) => {
       toast.error('Failed to queue job: ' + err.message);
-    }
+    },
   });
 };
 
@@ -147,7 +157,7 @@ export const useCoverage = () => {
   return useQuery<{ dates: string[] }>({
     queryKey: ['coverage'],
     queryFn: () => fetcher('/api/v1/data/coverage'),
-    retry: false
+    retry: false,
   });
 };
 
@@ -155,7 +165,7 @@ export const useAnalysis = () => {
   return useQuery<any>({
     queryKey: ['analysis'],
     queryFn: () => fetcher('/api/v1/results/analysis'),
-    retry: false
+    retry: false,
   });
 };
 
@@ -163,7 +173,7 @@ export const useNuuRetention = () => {
   return useQuery<any>({
     queryKey: ['nuu-retention'],
     queryFn: () => fetcher('/api/v1/results/nuu-retention'),
-    retry: false
+    retry: false,
   });
 };
 
@@ -171,7 +181,7 @@ export const useSignupFraction = () => {
   return useQuery<any>({
     queryKey: ['signup-fraction'],
     queryFn: () => fetcher('/api/v1/results/signup-fraction'),
-    retry: false
+    retry: false,
   });
 };
 
@@ -180,6 +190,6 @@ export const useCharts = () => {
   return useQuery<{ charts: string[] }>({
     queryKey: ['charts'],
     queryFn: () => fetcher('/api/v1/artifacts/charts'),
-    retry: false
+    retry: false,
   });
 };
