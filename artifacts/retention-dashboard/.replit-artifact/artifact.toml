@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Retention Dashboard"
+version = "1.0.0"
+id = "artifacts/retention-dashboard"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 26160
+
+[services.development]
+run = "pnpm --filter @workspace/retention-dashboard run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/retention-dashboard", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/retention-dashboard/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "26160"
+BASE_PATH = "/"
