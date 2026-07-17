@@ -1,0 +1,1902 @@
+{
+  "windowStart": "2025-11-17",
+  "windowEnd": "2026-07-17",
+  "grain": "Weekly",
+  "timezone": "UTC",
+  "cohort": "newUniqueUsers",
+  "metrics": {
+    "strictRetention": {
+      "metric": "nuuStrictRetention",
+      "grain": "Weekly",
+      "timelineStart": "2025-11-17",
+      "timelineEnd": "2026-07-17",
+      "cohort": "newUniqueUsers",
+      "buckets": [
+        {
+          "bucket": "2025-W47",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 8.415841584158416,
+              "retainedCohort": 51,
+              "totalCohort": 606,
+              "censored": 0,
+              "totalNuuInBucket": 606
+            },
+            "D3": {
+              "retentionPercent": 4.9504950495049505,
+              "retainedCohort": 30,
+              "totalCohort": 606,
+              "censored": 0,
+              "totalNuuInBucket": 606
+            },
+            "D7": {
+              "retentionPercent": 4.62046204620462,
+              "retainedCohort": 28,
+              "totalCohort": 606,
+              "censored": 0,
+              "totalNuuInBucket": 606
+            },
+            "D30": {
+              "retentionPercent": 1.9801980198019802,
+              "retainedCohort": 12,
+              "totalCohort": 606,
+              "censored": 0,
+              "totalNuuInBucket": 606
+            }
+          },
+          "coveredStart": "2025-11-17",
+          "coveredEnd": "2025-11-23",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2025-W48",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 7.814992025518341,
+              "retainedCohort": 49,
+              "totalCohort": 627,
+              "censored": 0,
+              "totalNuuInBucket": 627
+            },
+            "D3": {
+              "retentionPercent": 5.582137161084529,
+              "retainedCohort": 35,
+              "totalCohort": 627,
+              "censored": 0,
+              "totalNuuInBucket": 627
+            },
+            "D7": {
+              "retentionPercent": 3.827751196172249,
+              "retainedCohort": 24,
+              "totalCohort": 627,
+              "censored": 0,
+              "totalNuuInBucket": 627
+            },
+            "D30": {
+              "retentionPercent": 2.3923444976076556,
+              "retainedCohort": 15,
+              "totalCohort": 627,
+              "censored": 0,
+              "totalNuuInBucket": 627
+            }
+          },
+          "coveredStart": "2025-11-24",
+          "coveredEnd": "2025-11-30",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2025-W49",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 7.779171894604768,
+              "retainedCohort": 62,
+              "totalCohort": 797,
+              "censored": 0,
+              "totalNuuInBucket": 797
+            },
+            "D3": {
+              "retentionPercent": 4.391468005018821,
+              "retainedCohort": 35,
+              "totalCohort": 797,
+              "censored": 0,
+              "totalNuuInBucket": 797
+            },
+            "D7": {
+              "retentionPercent": 3.262233375156838,
+              "retainedCohort": 26,
+              "totalCohort": 797,
+              "censored": 0,
+              "totalNuuInBucket": 797
+            },
+            "D30": {
+              "retentionPercent": 2.258469259723965,
+              "retainedCohort": 18,
+              "totalCohort": 797,
+              "censored": 0,
+              "totalNuuInBucket": 797
+            }
+          },
+          "coveredStart": "2025-12-01",
+          "coveredEnd": "2025-12-07",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2025-W50",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 9.252912954078136,
+              "retainedCohort": 135,
+              "totalCohort": 1459,
+              "censored": 0,
+              "totalNuuInBucket": 1459
+            },
+            "D3": {
+              "retentionPercent": 4.866346812885538,
+              "retainedCohort": 71,
+              "totalCohort": 1459,
+              "censored": 0,
+              "totalNuuInBucket": 1459
+            },
+            "D7": {
+              "retentionPercent": 4.660726525017135,
+              "retainedCohort": 68,
+              "totalCohort": 1459,
+              "censored": 0,
+              "totalNuuInBucket": 1459
+            },
+            "D30": {
+              "retentionPercent": 3.427004797806717,
+              "retainedCohort": 50,
+              "totalCohort": 1459,
+              "censored": 0,
+              "totalNuuInBucket": 1459
+            }
+          },
+          "coveredStart": "2025-12-08",
+          "coveredEnd": "2025-12-14",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2025-W51",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 12.281508739650414,
+              "retainedCohort": 267,
+              "totalCohort": 2174,
+              "censored": 0,
+              "totalNuuInBucket": 2174
+            },
+            "D3": {
+              "retentionPercent": 7.313707451701931,
+              "retainedCohort": 159,
+              "totalCohort": 2174,
+              "censored": 0,
+              "totalNuuInBucket": 2174
+            },
+            "D7": {
+              "retentionPercent": 5.243790248390065,
+              "retainedCohort": 114,
+              "totalCohort": 2174,
+              "censored": 0,
+              "totalNuuInBucket": 2174
+            },
+            "D30": {
+              "retentionPercent": 4.001839926402944,
+              "retainedCohort": 87,
+              "totalCohort": 2174,
+              "censored": 0,
+              "totalNuuInBucket": 2174
+            }
+          },
+          "coveredStart": "2025-12-15",
+          "coveredEnd": "2025-12-21",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2025-W52",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 10.166919575113809,
+              "retainedCohort": 134,
+              "totalCohort": 1318,
+              "censored": 0,
+              "totalNuuInBucket": 1318
+            },
+            "D3": {
+              "retentionPercent": 5.690440060698028,
+              "retainedCohort": 75,
+              "totalCohort": 1318,
+              "censored": 0,
+              "totalNuuInBucket": 1318
+            },
+            "D7": {
+              "retentionPercent": 4.552352048558421,
+              "retainedCohort": 60,
+              "totalCohort": 1318,
+              "censored": 0,
+              "totalNuuInBucket": 1318
+            },
+            "D30": {
+              "retentionPercent": 3.338391502276176,
+              "retainedCohort": 44,
+              "totalCohort": 1318,
+              "censored": 0,
+              "totalNuuInBucket": 1318
+            }
+          },
+          "coveredStart": "2025-12-22",
+          "coveredEnd": "2025-12-28",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W01",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 10.823529411764705,
+              "retainedCohort": 138,
+              "totalCohort": 1275,
+              "censored": 0,
+              "totalNuuInBucket": 1275
+            },
+            "D3": {
+              "retentionPercent": 6.509803921568627,
+              "retainedCohort": 83,
+              "totalCohort": 1275,
+              "censored": 0,
+              "totalNuuInBucket": 1275
+            },
+            "D7": {
+              "retentionPercent": 5.490196078431373,
+              "retainedCohort": 70,
+              "totalCohort": 1275,
+              "censored": 0,
+              "totalNuuInBucket": 1275
+            },
+            "D30": {
+              "retentionPercent": 3.686274509803922,
+              "retainedCohort": 47,
+              "totalCohort": 1275,
+              "censored": 0,
+              "totalNuuInBucket": 1275
+            }
+          },
+          "coveredStart": "2025-12-29",
+          "coveredEnd": "2026-01-04",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W02",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 11.624745071380014,
+              "retainedCohort": 171,
+              "totalCohort": 1471,
+              "censored": 0,
+              "totalNuuInBucket": 1471
+            },
+            "D3": {
+              "retentionPercent": 6.1862678450034,
+              "retainedCohort": 91,
+              "totalCohort": 1471,
+              "censored": 0,
+              "totalNuuInBucket": 1471
+            },
+            "D7": {
+              "retentionPercent": 5.438477226376614,
+              "retainedCohort": 80,
+              "totalCohort": 1471,
+              "censored": 0,
+              "totalNuuInBucket": 1471
+            },
+            "D30": {
+              "retentionPercent": 3.467029231815092,
+              "retainedCohort": 51,
+              "totalCohort": 1471,
+              "censored": 0,
+              "totalNuuInBucket": 1471
+            }
+          },
+          "coveredStart": "2026-01-05",
+          "coveredEnd": "2026-01-11",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W03",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 12.344342176502437,
+              "retainedCohort": 228,
+              "totalCohort": 1847,
+              "censored": 0,
+              "totalNuuInBucket": 1847
+            },
+            "D3": {
+              "retentionPercent": 7.52571737953438,
+              "retainedCohort": 139,
+              "totalCohort": 1847,
+              "censored": 0,
+              "totalNuuInBucket": 1847
+            },
+            "D7": {
+              "retentionPercent": 5.739036275040607,
+              "retainedCohort": 106,
+              "totalCohort": 1847,
+              "censored": 0,
+              "totalNuuInBucket": 1847
+            },
+            "D30": {
+              "retentionPercent": 4.2772062804547915,
+              "retainedCohort": 79,
+              "totalCohort": 1847,
+              "censored": 0,
+              "totalNuuInBucket": 1847
+            }
+          },
+          "coveredStart": "2026-01-12",
+          "coveredEnd": "2026-01-18",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W04",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 10.887512899896802,
+              "retainedCohort": 211,
+              "totalCohort": 1938,
+              "censored": 0,
+              "totalNuuInBucket": 1938
+            },
+            "D3": {
+              "retentionPercent": 6.0887512899896805,
+              "retainedCohort": 118,
+              "totalCohort": 1938,
+              "censored": 0,
+              "totalNuuInBucket": 1938
+            },
+            "D7": {
+              "retentionPercent": 5.108359133126935,
+              "retainedCohort": 99,
+              "totalCohort": 1938,
+              "censored": 0,
+              "totalNuuInBucket": 1938
+            },
+            "D30": {
+              "retentionPercent": 3.2507739938080498,
+              "retainedCohort": 63,
+              "totalCohort": 1938,
+              "censored": 0,
+              "totalNuuInBucket": 1938
+            }
+          },
+          "coveredStart": "2026-01-19",
+          "coveredEnd": "2026-01-25",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W05",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 12.102385685884693,
+              "retainedCohort": 487,
+              "totalCohort": 4024,
+              "censored": 0,
+              "totalNuuInBucket": 4024
+            },
+            "D3": {
+              "retentionPercent": 5.864811133200795,
+              "retainedCohort": 236,
+              "totalCohort": 4024,
+              "censored": 0,
+              "totalNuuInBucket": 4024
+            },
+            "D7": {
+              "retentionPercent": 4.7713717693836974,
+              "retainedCohort": 192,
+              "totalCohort": 4024,
+              "censored": 0,
+              "totalNuuInBucket": 4024
+            },
+            "D30": {
+              "retentionPercent": 2.0626242544731612,
+              "retainedCohort": 83,
+              "totalCohort": 4024,
+              "censored": 0,
+              "totalNuuInBucket": 4024
+            }
+          },
+          "coveredStart": "2026-01-26",
+          "coveredEnd": "2026-02-01",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W06",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 12.968299711815561,
+              "retainedCohort": 315,
+              "totalCohort": 2429,
+              "censored": 0,
+              "totalNuuInBucket": 2429
+            },
+            "D3": {
+              "retentionPercent": 6.628242074927954,
+              "retainedCohort": 161,
+              "totalCohort": 2429,
+              "censored": 0,
+              "totalNuuInBucket": 2429
+            },
+            "D7": {
+              "retentionPercent": 5.763688760806916,
+              "retainedCohort": 140,
+              "totalCohort": 2429,
+              "censored": 0,
+              "totalNuuInBucket": 2429
+            },
+            "D30": {
+              "retentionPercent": 1.9761218608480857,
+              "retainedCohort": 48,
+              "totalCohort": 2429,
+              "censored": 0,
+              "totalNuuInBucket": 2429
+            }
+          },
+          "coveredStart": "2026-02-02",
+          "coveredEnd": "2026-02-08",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W07",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 12.397820163487738,
+              "retainedCohort": 273,
+              "totalCohort": 2202,
+              "censored": 0,
+              "totalNuuInBucket": 2202
+            },
+            "D3": {
+              "retentionPercent": 7.811080835603996,
+              "retainedCohort": 172,
+              "totalCohort": 2202,
+              "censored": 0,
+              "totalNuuInBucket": 2202
+            },
+            "D7": {
+              "retentionPercent": 6.539509536784741,
+              "retainedCohort": 144,
+              "totalCohort": 2202,
+              "censored": 0,
+              "totalNuuInBucket": 2202
+            },
+            "D30": {
+              "retentionPercent": 1.9981834695731153,
+              "retainedCohort": 44,
+              "totalCohort": 2202,
+              "censored": 0,
+              "totalNuuInBucket": 2202
+            }
+          },
+          "coveredStart": "2026-02-09",
+          "coveredEnd": "2026-02-15",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W08",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 12.97416162726773,
+              "retainedCohort": 236,
+              "totalCohort": 1819,
+              "censored": 0,
+              "totalNuuInBucket": 1819
+            },
+            "D3": {
+              "retentionPercent": 7.806487080813635,
+              "retainedCohort": 142,
+              "totalCohort": 1819,
+              "censored": 0,
+              "totalNuuInBucket": 1819
+            },
+            "D7": {
+              "retentionPercent": 5.66245189664651,
+              "retainedCohort": 103,
+              "totalCohort": 1819,
+              "censored": 0,
+              "totalNuuInBucket": 1819
+            },
+            "D30": {
+              "retentionPercent": 2.638812534359538,
+              "retainedCohort": 48,
+              "totalCohort": 1819,
+              "censored": 0,
+              "totalNuuInBucket": 1819
+            }
+          },
+          "coveredStart": "2026-02-16",
+          "coveredEnd": "2026-02-22",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W09",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 18.995356690586746,
+              "retainedCohort": 1350,
+              "totalCohort": 7107,
+              "censored": 0,
+              "totalNuuInBucket": 7107
+            },
+            "D3": {
+              "retentionPercent": 12.987195722527087,
+              "retainedCohort": 923,
+              "totalCohort": 7107,
+              "censored": 0,
+              "totalNuuInBucket": 7107
+            },
+            "D7": {
+              "retentionPercent": 13.113831433797666,
+              "retainedCohort": 932,
+              "totalCohort": 7107,
+              "censored": 0,
+              "totalNuuInBucket": 7107
+            },
+            "D30": {
+              "retentionPercent": 9.385113268608414,
+              "retainedCohort": 667,
+              "totalCohort": 7107,
+              "censored": 0,
+              "totalNuuInBucket": 7107
+            }
+          },
+          "coveredStart": "2026-02-23",
+          "coveredEnd": "2026-03-01",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W10",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 11.83206106870229,
+              "retainedCohort": 651,
+              "totalCohort": 5502,
+              "censored": 0,
+              "totalNuuInBucket": 5502
+            },
+            "D3": {
+              "retentionPercent": 6.961105052708107,
+              "retainedCohort": 383,
+              "totalCohort": 5502,
+              "censored": 0,
+              "totalNuuInBucket": 5502
+            },
+            "D7": {
+              "retentionPercent": 4.943656852053799,
+              "retainedCohort": 272,
+              "totalCohort": 5502,
+              "censored": 0,
+              "totalNuuInBucket": 5502
+            },
+            "D30": {
+              "retentionPercent": 3.435114503816794,
+              "retainedCohort": 189,
+              "totalCohort": 5502,
+              "censored": 0,
+              "totalNuuInBucket": 5502
+            }
+          },
+          "coveredStart": "2026-03-02",
+          "coveredEnd": "2026-03-08",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W11",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 10.38204187351608,
+              "retainedCohort": 481,
+              "totalCohort": 4633,
+              "censored": 0,
+              "totalNuuInBucket": 4633
+            },
+            "D3": {
+              "retentionPercent": 5.396071659831643,
+              "retainedCohort": 250,
+              "totalCohort": 4633,
+              "censored": 0,
+              "totalNuuInBucket": 4633
+            },
+            "D7": {
+              "retentionPercent": 4.878048780487805,
+              "retainedCohort": 226,
+              "totalCohort": 4633,
+              "censored": 0,
+              "totalNuuInBucket": 4633
+            },
+            "D30": {
+              "retentionPercent": 3.475070148931578,
+              "retainedCohort": 161,
+              "totalCohort": 4633,
+              "censored": 0,
+              "totalNuuInBucket": 4633
+            }
+          },
+          "coveredStart": "2026-03-09",
+          "coveredEnd": "2026-03-15",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W12",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 8.169464428457236,
+              "retainedCohort": 511,
+              "totalCohort": 6255,
+              "censored": 0,
+              "totalNuuInBucket": 6255
+            },
+            "D3": {
+              "retentionPercent": 4.220623501199041,
+              "retainedCohort": 264,
+              "totalCohort": 6255,
+              "censored": 0,
+              "totalNuuInBucket": 6255
+            },
+            "D7": {
+              "retentionPercent": 3.9648281374900076,
+              "retainedCohort": 248,
+              "totalCohort": 6255,
+              "censored": 0,
+              "totalNuuInBucket": 6255
+            },
+            "D30": {
+              "retentionPercent": 2.302158273381295,
+              "retainedCohort": 144,
+              "totalCohort": 6255,
+              "censored": 0,
+              "totalNuuInBucket": 6255
+            }
+          },
+          "coveredStart": "2026-03-16",
+          "coveredEnd": "2026-03-22",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W13",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 7.613099257258608,
+              "retainedCohort": 451,
+              "totalCohort": 5924,
+              "censored": 0,
+              "totalNuuInBucket": 5924
+            },
+            "D3": {
+              "retentionPercent": 4.372045914922349,
+              "retainedCohort": 259,
+              "totalCohort": 5924,
+              "censored": 0,
+              "totalNuuInBucket": 5924
+            },
+            "D7": {
+              "retentionPercent": 3.038487508440243,
+              "retainedCohort": 180,
+              "totalCohort": 5924,
+              "censored": 0,
+              "totalNuuInBucket": 5924
+            },
+            "D30": {
+              "retentionPercent": 1.738690074274139,
+              "retainedCohort": 103,
+              "totalCohort": 5924,
+              "censored": 0,
+              "totalNuuInBucket": 5924
+            }
+          },
+          "coveredStart": "2026-03-23",
+          "coveredEnd": "2026-03-29",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W14",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 7.070981778623878,
+              "retainedCohort": 260,
+              "totalCohort": 3677,
+              "censored": 0,
+              "totalNuuInBucket": 3677
+            },
+            "D3": {
+              "retentionPercent": 2.8011966276856133,
+              "retainedCohort": 103,
+              "totalCohort": 3677,
+              "censored": 0,
+              "totalNuuInBucket": 3677
+            },
+            "D7": {
+              "retentionPercent": 2.6652162088659233,
+              "retainedCohort": 98,
+              "totalCohort": 3677,
+              "censored": 0,
+              "totalNuuInBucket": 3677
+            },
+            "D30": {
+              "retentionPercent": 2.094098449823225,
+              "retainedCohort": 77,
+              "totalCohort": 3677,
+              "censored": 0,
+              "totalNuuInBucket": 3677
+            }
+          },
+          "coveredStart": "2026-03-30",
+          "coveredEnd": "2026-04-05",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W15",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 11.917690768791084,
+              "retainedCohort": 417,
+              "totalCohort": 3499,
+              "censored": 0,
+              "totalNuuInBucket": 3499
+            },
+            "D3": {
+              "retentionPercent": 7.259216919119749,
+              "retainedCohort": 254,
+              "totalCohort": 3499,
+              "censored": 0,
+              "totalNuuInBucket": 3499
+            },
+            "D7": {
+              "retentionPercent": 5.8016576164618465,
+              "retainedCohort": 203,
+              "totalCohort": 3499,
+              "censored": 0,
+              "totalNuuInBucket": 3499
+            },
+            "D30": {
+              "retentionPercent": 3.829665618748214,
+              "retainedCohort": 134,
+              "totalCohort": 3499,
+              "censored": 0,
+              "totalNuuInBucket": 3499
+            }
+          },
+          "coveredStart": "2026-04-06",
+          "coveredEnd": "2026-04-12",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W16",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 9.261576971214017,
+              "retainedCohort": 222,
+              "totalCohort": 2397,
+              "censored": 0,
+              "totalNuuInBucket": 2397
+            },
+            "D3": {
+              "retentionPercent": 6.090947017104714,
+              "retainedCohort": 146,
+              "totalCohort": 2397,
+              "censored": 0,
+              "totalNuuInBucket": 2397
+            },
+            "D7": {
+              "retentionPercent": 5.089695452649145,
+              "retainedCohort": 122,
+              "totalCohort": 2397,
+              "censored": 0,
+              "totalNuuInBucket": 2397
+            },
+            "D30": {
+              "retentionPercent": 2.920317062995411,
+              "retainedCohort": 70,
+              "totalCohort": 2397,
+              "censored": 0,
+              "totalNuuInBucket": 2397
+            }
+          },
+          "coveredStart": "2026-04-13",
+          "coveredEnd": "2026-04-19",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W17",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 9.40212150433944,
+              "retainedCohort": 195,
+              "totalCohort": 2074,
+              "censored": 0,
+              "totalNuuInBucket": 2074
+            },
+            "D3": {
+              "retentionPercent": 5.785920925747348,
+              "retainedCohort": 120,
+              "totalCohort": 2074,
+              "censored": 0,
+              "totalNuuInBucket": 2074
+            },
+            "D7": {
+              "retentionPercent": 5.303760848601736,
+              "retainedCohort": 110,
+              "totalCohort": 2074,
+              "censored": 0,
+              "totalNuuInBucket": 2074
+            },
+            "D30": {
+              "retentionPercent": 2.941176470588235,
+              "retainedCohort": 61,
+              "totalCohort": 2074,
+              "censored": 0,
+              "totalNuuInBucket": 2074
+            }
+          },
+          "coveredStart": "2026-04-20",
+          "coveredEnd": "2026-04-26",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W18",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 7.152954481198756,
+              "retainedCohort": 253,
+              "totalCohort": 3537,
+              "censored": 0,
+              "totalNuuInBucket": 3537
+            },
+            "D3": {
+              "retentionPercent": 3.9016115351993217,
+              "retainedCohort": 138,
+              "totalCohort": 3537,
+              "censored": 0,
+              "totalNuuInBucket": 3537
+            },
+            "D7": {
+              "retentionPercent": 2.855527283008199,
+              "retainedCohort": 101,
+              "totalCohort": 3537,
+              "censored": 0,
+              "totalNuuInBucket": 3537
+            },
+            "D30": {
+              "retentionPercent": 2.2335312411648287,
+              "retainedCohort": 79,
+              "totalCohort": 3537,
+              "censored": 0,
+              "totalNuuInBucket": 3537
+            }
+          },
+          "coveredStart": "2026-04-27",
+          "coveredEnd": "2026-05-03",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W19",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 6.621140142517815,
+              "retainedCohort": 223,
+              "totalCohort": 3368,
+              "censored": 0,
+              "totalNuuInBucket": 3368
+            },
+            "D3": {
+              "retentionPercent": 3.800475059382423,
+              "retainedCohort": 128,
+              "totalCohort": 3368,
+              "censored": 0,
+              "totalNuuInBucket": 3368
+            },
+            "D7": {
+              "retentionPercent": 2.8503562945368173,
+              "retainedCohort": 96,
+              "totalCohort": 3368,
+              "censored": 0,
+              "totalNuuInBucket": 3368
+            },
+            "D30": {
+              "retentionPercent": 2.2268408551068886,
+              "retainedCohort": 75,
+              "totalCohort": 3368,
+              "censored": 0,
+              "totalNuuInBucket": 3368
+            }
+          },
+          "coveredStart": "2026-05-04",
+          "coveredEnd": "2026-05-10",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W20",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 9.494097807757166,
+              "retainedCohort": 563,
+              "totalCohort": 5930,
+              "censored": 0,
+              "totalNuuInBucket": 5930
+            },
+            "D3": {
+              "retentionPercent": 4.603709949409781,
+              "retainedCohort": 273,
+              "totalCohort": 5930,
+              "censored": 0,
+              "totalNuuInBucket": 5930
+            },
+            "D7": {
+              "retentionPercent": 3.6762225969645868,
+              "retainedCohort": 218,
+              "totalCohort": 5930,
+              "censored": 0,
+              "totalNuuInBucket": 5930
+            },
+            "D30": {
+              "retentionPercent": 2.630691399662732,
+              "retainedCohort": 156,
+              "totalCohort": 5930,
+              "censored": 0,
+              "totalNuuInBucket": 5930
+            }
+          },
+          "coveredStart": "2026-05-11",
+          "coveredEnd": "2026-05-17",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W21",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 8.018658374055976,
+              "retainedCohort": 361,
+              "totalCohort": 4502,
+              "censored": 0,
+              "totalNuuInBucket": 4502
+            },
+            "D3": {
+              "retentionPercent": 4.731230564193692,
+              "retainedCohort": 213,
+              "totalCohort": 4502,
+              "censored": 0,
+              "totalNuuInBucket": 4502
+            },
+            "D7": {
+              "retentionPercent": 3.287427809862283,
+              "retainedCohort": 148,
+              "totalCohort": 4502,
+              "censored": 0,
+              "totalNuuInBucket": 4502
+            },
+            "D30": {
+              "retentionPercent": 2.1990226565970676,
+              "retainedCohort": 99,
+              "totalCohort": 4502,
+              "censored": 0,
+              "totalNuuInBucket": 4502
+            }
+          },
+          "coveredStart": "2026-05-18",
+          "coveredEnd": "2026-05-24",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W22",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 7.918170878459688,
+              "retainedCohort": 329,
+              "totalCohort": 4155,
+              "censored": 0,
+              "totalNuuInBucket": 4155
+            },
+            "D3": {
+              "retentionPercent": 5.222623345367028,
+              "retainedCohort": 217,
+              "totalCohort": 4155,
+              "censored": 0,
+              "totalNuuInBucket": 4155
+            },
+            "D7": {
+              "retentionPercent": 3.7785800240673884,
+              "retainedCohort": 157,
+              "totalCohort": 4155,
+              "censored": 0,
+              "totalNuuInBucket": 4155
+            },
+            "D30": {
+              "retentionPercent": 2.5511432009626955,
+              "retainedCohort": 106,
+              "totalCohort": 4155,
+              "censored": 0,
+              "totalNuuInBucket": 4155
+            }
+          },
+          "coveredStart": "2026-05-25",
+          "coveredEnd": "2026-05-31",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W23",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 7.83375314861461,
+              "retainedCohort": 311,
+              "totalCohort": 3970,
+              "censored": 0,
+              "totalNuuInBucket": 3970
+            },
+            "D3": {
+              "retentionPercent": 4.307304785894207,
+              "retainedCohort": 171,
+              "totalCohort": 3970,
+              "censored": 0,
+              "totalNuuInBucket": 3970
+            },
+            "D7": {
+              "retentionPercent": 3.1738035264483626,
+              "retainedCohort": 126,
+              "totalCohort": 3970,
+              "censored": 0,
+              "totalNuuInBucket": 3970
+            },
+            "D30": {
+              "retentionPercent": 2.468513853904282,
+              "retainedCohort": 98,
+              "totalCohort": 3970,
+              "censored": 0,
+              "totalNuuInBucket": 3970
+            }
+          },
+          "coveredStart": "2026-06-01",
+          "coveredEnd": "2026-06-07",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W24",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 7.62680488707886,
+              "retainedCohort": 206,
+              "totalCohort": 2701,
+              "censored": 0,
+              "totalNuuInBucket": 2701
+            },
+            "D3": {
+              "retentionPercent": 4.776008885597927,
+              "retainedCohort": 129,
+              "totalCohort": 2701,
+              "censored": 0,
+              "totalNuuInBucket": 2701
+            },
+            "D7": {
+              "retentionPercent": 3.776379118844872,
+              "retainedCohort": 102,
+              "totalCohort": 2701,
+              "censored": 0,
+              "totalNuuInBucket": 2701
+            },
+            "D30": {
+              "retentionPercent": 2.6286560533135876,
+              "retainedCohort": 71,
+              "totalCohort": 2701,
+              "censored": 0,
+              "totalNuuInBucket": 2701
+            }
+          },
+          "coveredStart": "2026-06-08",
+          "coveredEnd": "2026-06-14",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W25",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 7.028020211299954,
+              "retainedCohort": 153,
+              "totalCohort": 2177,
+              "censored": 0,
+              "totalNuuInBucket": 2177
+            },
+            "D3": {
+              "retentionPercent": 3.9503904455672942,
+              "retainedCohort": 86,
+              "totalCohort": 2177,
+              "censored": 0,
+              "totalNuuInBucket": 2177
+            },
+            "D7": {
+              "retentionPercent": 3.215434083601286,
+              "retainedCohort": 70,
+              "totalCohort": 2177,
+              "censored": 0,
+              "totalNuuInBucket": 2177
+            },
+            "D30": {
+              "retentionPercent": 1.4807502467917077,
+              "retainedCohort": 15,
+              "totalCohort": 1013,
+              "censored": 1164,
+              "totalNuuInBucket": 2177
+            }
+          },
+          "coveredStart": "2026-06-15",
+          "coveredEnd": "2026-06-21",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W26",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 9.300411522633745,
+              "retainedCohort": 226,
+              "totalCohort": 2430,
+              "censored": 0,
+              "totalNuuInBucket": 2430
+            },
+            "D3": {
+              "retentionPercent": 5.679012345679013,
+              "retainedCohort": 138,
+              "totalCohort": 2430,
+              "censored": 0,
+              "totalNuuInBucket": 2430
+            },
+            "D7": {
+              "retentionPercent": 4.814814814814815,
+              "retainedCohort": 117,
+              "totalCohort": 2430,
+              "censored": 0,
+              "totalNuuInBucket": 2430
+            },
+            "D30": {
+              "retentionPercent": "N/A",
+              "retainedCohort": 0,
+              "totalCohort": 0,
+              "censored": 2430,
+              "totalNuuInBucket": 2430
+            }
+          },
+          "coveredStart": "2026-06-22",
+          "coveredEnd": "2026-06-28",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W27",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 8.270676691729323,
+              "retainedCohort": 176,
+              "totalCohort": 2128,
+              "censored": 0,
+              "totalNuuInBucket": 2128
+            },
+            "D3": {
+              "retentionPercent": 5.0281954887218046,
+              "retainedCohort": 107,
+              "totalCohort": 2128,
+              "censored": 0,
+              "totalNuuInBucket": 2128
+            },
+            "D7": {
+              "retentionPercent": 3.806390977443609,
+              "retainedCohort": 81,
+              "totalCohort": 2128,
+              "censored": 0,
+              "totalNuuInBucket": 2128
+            },
+            "D30": {
+              "retentionPercent": "N/A",
+              "retainedCohort": 0,
+              "totalCohort": 0,
+              "censored": 2128,
+              "totalNuuInBucket": 2128
+            }
+          },
+          "coveredStart": "2026-06-29",
+          "coveredEnd": "2026-07-05",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W28",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 7.2004028197381675,
+              "retainedCohort": 143,
+              "totalCohort": 1986,
+              "censored": 0,
+              "totalNuuInBucket": 1986
+            },
+            "D3": {
+              "retentionPercent": 4.934541792547835,
+              "retainedCohort": 98,
+              "totalCohort": 1986,
+              "censored": 0,
+              "totalNuuInBucket": 1986
+            },
+            "D7": {
+              "retentionPercent": 3.7254901960784315,
+              "retainedCohort": 57,
+              "totalCohort": 1530,
+              "censored": 456,
+              "totalNuuInBucket": 1986
+            },
+            "D30": {
+              "retentionPercent": "N/A",
+              "retainedCohort": 0,
+              "totalCohort": 0,
+              "censored": 1986,
+              "totalNuuInBucket": 1986
+            }
+          },
+          "coveredStart": "2026-07-06",
+          "coveredEnd": "2026-07-12",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W29",
+          "grain": "Weekly",
+          "horizons": {
+            "D1": {
+              "retentionPercent": 5.994005994005994,
+              "retainedCohort": 60,
+              "totalCohort": 1001,
+              "censored": 0,
+              "totalNuuInBucket": 1001
+            },
+            "D3": {
+              "retentionPercent": 3.415559772296015,
+              "retainedCohort": 18,
+              "totalCohort": 527,
+              "censored": 474,
+              "totalNuuInBucket": 1001
+            },
+            "D7": {
+              "retentionPercent": "N/A",
+              "retainedCohort": 0,
+              "totalCohort": 0,
+              "censored": 1001,
+              "totalNuuInBucket": 1001
+            },
+            "D30": {
+              "retentionPercent": "N/A",
+              "retainedCohort": 0,
+              "totalCohort": 0,
+              "censored": 1001,
+              "totalNuuInBucket": 1001
+            }
+          },
+          "coveredStart": "2026-07-13",
+          "coveredEnd": "2026-07-17",
+          "partialBucket": true,
+          "censorSide": "right"
+        }
+      ]
+    },
+    "cumulativeRetention": {
+      "metric": "nuuCumulativeRetention",
+      "grain": "Weekly",
+      "timelineStart": "2025-11-17",
+      "timelineEnd": "2026-07-17",
+      "cohort": "newUniqueUsers",
+      "buckets": [
+        {
+          "bucket": "2025-W47",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 10.891089108910892,
+              "retainedCohort": 66,
+              "totalCohort": 606,
+              "censored": 0,
+              "totalNuuInBucket": 606
+            },
+            "D7": {
+              "retentionPercent": 12.046204620462046,
+              "retainedCohort": 73,
+              "totalCohort": 606,
+              "censored": 0,
+              "totalNuuInBucket": 606
+            },
+            "D30": {
+              "retentionPercent": 13.531353135313532,
+              "retainedCohort": 82,
+              "totalCohort": 606,
+              "censored": 0,
+              "totalNuuInBucket": 606
+            }
+          },
+          "coveredStart": "2025-11-17",
+          "coveredEnd": "2025-11-23",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2025-W48",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 11.004784688995215,
+              "retainedCohort": 69,
+              "totalCohort": 627,
+              "censored": 0,
+              "totalNuuInBucket": 627
+            },
+            "D7": {
+              "retentionPercent": 12.759170653907494,
+              "retainedCohort": 80,
+              "totalCohort": 627,
+              "censored": 0,
+              "totalNuuInBucket": 627
+            },
+            "D30": {
+              "retentionPercent": 14.513556618819775,
+              "retainedCohort": 91,
+              "totalCohort": 627,
+              "censored": 0,
+              "totalNuuInBucket": 627
+            }
+          },
+          "coveredStart": "2025-11-24",
+          "coveredEnd": "2025-11-30",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2025-W49",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 10.664993726474279,
+              "retainedCohort": 85,
+              "totalCohort": 797,
+              "censored": 0,
+              "totalNuuInBucket": 797
+            },
+            "D7": {
+              "retentionPercent": 13.42534504391468,
+              "retainedCohort": 107,
+              "totalCohort": 797,
+              "censored": 0,
+              "totalNuuInBucket": 797
+            },
+            "D30": {
+              "retentionPercent": 15.934755332496863,
+              "retainedCohort": 127,
+              "totalCohort": 797,
+              "censored": 0,
+              "totalNuuInBucket": 797
+            }
+          },
+          "coveredStart": "2025-12-01",
+          "coveredEnd": "2025-12-07",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2025-W50",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 11.3776559287183,
+              "retainedCohort": 166,
+              "totalCohort": 1459,
+              "censored": 0,
+              "totalNuuInBucket": 1459
+            },
+            "D7": {
+              "retentionPercent": 13.433858807402329,
+              "retainedCohort": 196,
+              "totalCohort": 1459,
+              "censored": 0,
+              "totalNuuInBucket": 1459
+            },
+            "D30": {
+              "retentionPercent": 16.518163125428377,
+              "retainedCohort": 241,
+              "totalCohort": 1459,
+              "censored": 0,
+              "totalNuuInBucket": 1459
+            }
+          },
+          "coveredStart": "2025-12-08",
+          "coveredEnd": "2025-12-14",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2025-W51",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 17.571297148114077,
+              "retainedCohort": 382,
+              "totalCohort": 2174,
+              "censored": 0,
+              "totalNuuInBucket": 2174
+            },
+            "D7": {
+              "retentionPercent": 20.377184912603497,
+              "retainedCohort": 443,
+              "totalCohort": 2174,
+              "censored": 0,
+              "totalNuuInBucket": 2174
+            },
+            "D30": {
+              "retentionPercent": 23.87304507819687,
+              "retainedCohort": 519,
+              "totalCohort": 2174,
+              "censored": 0,
+              "totalNuuInBucket": 2174
+            }
+          },
+          "coveredStart": "2025-12-15",
+          "coveredEnd": "2025-12-21",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2025-W52",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 14.49165402124431,
+              "retainedCohort": 191,
+              "totalCohort": 1318,
+              "censored": 0,
+              "totalNuuInBucket": 1318
+            },
+            "D7": {
+              "retentionPercent": 16.99544764795144,
+              "retainedCohort": 224,
+              "totalCohort": 1318,
+              "censored": 0,
+              "totalNuuInBucket": 1318
+            },
+            "D30": {
+              "retentionPercent": 21.16843702579666,
+              "retainedCohort": 279,
+              "totalCohort": 1318,
+              "censored": 0,
+              "totalNuuInBucket": 1318
+            }
+          },
+          "coveredStart": "2025-12-22",
+          "coveredEnd": "2025-12-28",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W01",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 14.03921568627451,
+              "retainedCohort": 179,
+              "totalCohort": 1275,
+              "censored": 0,
+              "totalNuuInBucket": 1275
+            },
+            "D7": {
+              "retentionPercent": 16,
+              "retainedCohort": 204,
+              "totalCohort": 1275,
+              "censored": 0,
+              "totalNuuInBucket": 1275
+            },
+            "D30": {
+              "retentionPercent": 20.15686274509804,
+              "retainedCohort": 257,
+              "totalCohort": 1275,
+              "censored": 0,
+              "totalNuuInBucket": 1275
+            }
+          },
+          "coveredStart": "2025-12-29",
+          "coveredEnd": "2026-01-04",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W02",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 15.363698164513936,
+              "retainedCohort": 226,
+              "totalCohort": 1471,
+              "censored": 0,
+              "totalNuuInBucket": 1471
+            },
+            "D7": {
+              "retentionPercent": 19.306594153636983,
+              "retainedCohort": 284,
+              "totalCohort": 1471,
+              "censored": 0,
+              "totalNuuInBucket": 1471
+            },
+            "D30": {
+              "retentionPercent": 22.637661454792656,
+              "retainedCohort": 333,
+              "totalCohort": 1471,
+              "censored": 0,
+              "totalNuuInBucket": 1471
+            }
+          },
+          "coveredStart": "2026-01-05",
+          "coveredEnd": "2026-01-11",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W03",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 17.162966973470493,
+              "retainedCohort": 317,
+              "totalCohort": 1847,
+              "censored": 0,
+              "totalNuuInBucket": 1847
+            },
+            "D7": {
+              "retentionPercent": 20.411478072550082,
+              "retainedCohort": 377,
+              "totalCohort": 1847,
+              "censored": 0,
+              "totalNuuInBucket": 1847
+            },
+            "D30": {
+              "retentionPercent": 24.038982133188956,
+              "retainedCohort": 444,
+              "totalCohort": 1847,
+              "censored": 0,
+              "totalNuuInBucket": 1847
+            }
+          },
+          "coveredStart": "2026-01-12",
+          "coveredEnd": "2026-01-18",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W04",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 15.479876160990713,
+              "retainedCohort": 300,
+              "totalCohort": 1938,
+              "censored": 0,
+              "totalNuuInBucket": 1938
+            },
+            "D7": {
+              "retentionPercent": 18.730650154798763,
+              "retainedCohort": 363,
+              "totalCohort": 1938,
+              "censored": 0,
+              "totalNuuInBucket": 1938
+            },
+            "D30": {
+              "retentionPercent": 23.890608875129,
+              "retainedCohort": 463,
+              "totalCohort": 1938,
+              "censored": 0,
+              "totalNuuInBucket": 1938
+            }
+          },
+          "coveredStart": "2026-01-19",
+          "coveredEnd": "2026-01-25",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W05",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 16.525844930417495,
+              "retainedCohort": 665,
+              "totalCohort": 4024,
+              "censored": 0,
+              "totalNuuInBucket": 4024
+            },
+            "D7": {
+              "retentionPercent": 18.78727634194831,
+              "retainedCohort": 756,
+              "totalCohort": 4024,
+              "censored": 0,
+              "totalNuuInBucket": 4024
+            },
+            "D30": {
+              "retentionPercent": 22.813121272365805,
+              "retainedCohort": 918,
+              "totalCohort": 4024,
+              "censored": 0,
+              "totalNuuInBucket": 4024
+            }
+          },
+          "coveredStart": "2026-01-26",
+          "coveredEnd": "2026-02-01",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W06",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 16.75586661177439,
+              "retainedCohort": 407,
+              "totalCohort": 2429,
+              "censored": 0,
+              "totalNuuInBucket": 2429
+            },
+            "D7": {
+              "retentionPercent": 20.21407986825854,
+              "retainedCohort": 491,
+              "totalCohort": 2429,
+              "censored": 0,
+              "totalNuuInBucket": 2429
+            },
+            "D30": {
+              "retentionPercent": 24.989707698641418,
+              "retainedCohort": 607,
+              "totalCohort": 2429,
+              "censored": 0,
+              "totalNuuInBucket": 2429
+            }
+          },
+          "coveredStart": "2026-02-02",
+          "coveredEnd": "2026-02-08",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W07",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 16.575840145322434,
+              "retainedCohort": 365,
+              "totalCohort": 2202,
+              "censored": 0,
+              "totalNuuInBucket": 2202
+            },
+            "D7": {
+              "retentionPercent": 19.845594913714805,
+              "retainedCohort": 437,
+              "totalCohort": 2202,
+              "censored": 0,
+              "totalNuuInBucket": 2202
+            },
+            "D30": {
+              "retentionPercent": 24.97729336966394,
+              "retainedCohort": 550,
+              "totalCohort": 2202,
+              "censored": 0,
+              "totalNuuInBucket": 2202
+            }
+          },
+          "coveredStart": "2026-02-09",
+          "coveredEnd": "2026-02-15",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W08",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 18.361737218251786,
+              "retainedCohort": 334,
+              "totalCohort": 1819,
+              "censored": 0,
+              "totalNuuInBucket": 1819
+            },
+            "D7": {
+              "retentionPercent": 22.210005497526115,
+              "retainedCohort": 404,
+              "totalCohort": 1819,
+              "censored": 0,
+              "totalNuuInBucket": 1819
+            },
+            "D30": {
+              "retentionPercent": 26.278174821330403,
+              "retainedCohort": 478,
+              "totalCohort": 1819,
+              "censored": 0,
+              "totalNuuInBucket": 1819
+            }
+          },
+          "coveredStart": "2026-02-16",
+          "coveredEnd": "2026-02-22",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W09",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 24.975376389475166,
+              "retainedCohort": 1775,
+              "totalCohort": 7107,
+              "censored": 0,
+              "totalNuuInBucket": 7107
+            },
+            "D7": {
+              "retentionPercent": 29.590544533558464,
+              "retainedCohort": 2103,
+              "totalCohort": 7107,
+              "censored": 0,
+              "totalNuuInBucket": 7107
+            },
+            "D30": {
+              "retentionPercent": 37.31532292106374,
+              "retainedCohort": 2652,
+              "totalCohort": 7107,
+              "censored": 0,
+              "totalNuuInBucket": 7107
+            }
+          },
+          "coveredStart": "2026-02-23",
+          "coveredEnd": "2026-03-01",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W10",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 16.72119229371138,
+              "retainedCohort": 920,
+              "totalCohort": 5502,
+              "censored": 0,
+              "totalNuuInBucket": 5502
+            },
+            "D7": {
+              "retentionPercent": 19.774627408215196,
+              "retainedCohort": 1088,
+              "totalCohort": 5502,
+              "censored": 0,
+              "totalNuuInBucket": 5502
+            },
+            "D30": {
+              "retentionPercent": 27.953471464921847,
+              "retainedCohort": 1538,
+              "totalCohort": 5502,
+              "censored": 0,
+              "totalNuuInBucket": 5502
+            }
+          },
+          "coveredStart": "2026-03-02",
+          "coveredEnd": "2026-03-08",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W11",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 14.547809194906108,
+              "retainedCohort": 674,
+              "totalCohort": 4633,
+              "censored": 0,
+              "totalNuuInBucket": 4633
+            },
+            "D7": {
+              "retentionPercent": 17.396935031297215,
+              "retainedCohort": 806,
+              "totalCohort": 4633,
+              "censored": 0,
+              "totalNuuInBucket": 4633
+            },
+            "D30": {
+              "retentionPercent": 24.217569609324414,
+              "retainedCohort": 1122,
+              "totalCohort": 4633,
+              "censored": 0,
+              "totalNuuInBucket": 4633
+            }
+          },
+          "coveredStart": "2026-03-09",
+          "coveredEnd": "2026-03-15",
+          "partialBucket": false,
+          "censorSide": null
+        },
+        {
+          "bucket": "2026-W12",
+          "grain": "Weekly",
+          "horizons": {
+            "D3": {
+              "retentionPercent": 11.718625099920065,
+              "retainedCohort": 733,
+              "totalCohort": 6255,
+              "censored": 0,
+              "totalNuuInBucket": 6255
+            },
+            "D7": {
+              "retentionPercent": 14.308553157474021,
+              "retainedCohort": 895,
+              "totalCohort": 6255,
+              "censored": 0,
+              "totalNuuInBucket": 6255
+            },
+            "D30": {
+              "retentionPercent": 19.53637090327738,
+              "retainedCohort": 1222,
+              "to

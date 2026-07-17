@@ -1,178 +1,227 @@
 import { useNuuRetention, useSignupFraction } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend, ComposedChart, Bar } from 'recharts';
+import { Badge } from '@/components/ui/badge';
+import {
+  AreaChart, Area,
+  LineChart, Line,
+  XAxis, YAxis, CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer, Legend,
+  ComposedChart, Bar,
+} from 'recharts';
 import { useMemo } from 'react';
 
-export default function NUU() {
-  const { data: nuuData, isLoading: nuuLoading, error: nuuError } = useNuuRetention();
-  const { data: signupData, isLoading: signupLoading, error: signupError } = useSignupFraction();
+const HORIZON_COLORS: Record<string, string> = {
+  D1:  'hsl(var(--chart-1))',
+  D3:  'hsl(var(--chart-2))',
+  D7:  'hsl(var(--chart-3))',
+  D30: 'hsl(var(--chart-5))',
+};
 
-  const formattedNuu = useMemo(() => {
-    if (!nuuData || !nuuData.nuu_counts) return [];
-    return nuuData.nuu_counts.map((d: any) => ({
-      ...d,
-      count: d.count === 'N/A' ? null : d.count
-    }));
+const tooltipStyle = {
+  contentStyle: { backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' },
+  itemStyle:    { fontFamily: 'var(--app-font-mono)', fontSize: 12 },
+  labelStyle:   { color: 'hsl(var(--muted-foreground))', marginBottom: '8px', fontWeight: 600 },
+};
+
+export default function NUU() {
+  const { data: nuuData, isLoading: nuuLoading } = useNuuRetention();
+  const { data: signupData, isLoading: signupLoading } = useSignupFraction();
+
+  // Flatten strictRetention buckets into chart rows
+  const nuuVolumeData = useMemo(() => {
+    const buckets: any[] = nuuData?.metrics?.strictRetention?.buckets ?? [];
+    return buckets.map((b: any) => {
+      // totalNuuInBucket is the same across all horizons — prefer D1, fall back to D3
+      const total = b.horizons?.D1?.totalNuuInBucket ?? b.horizons?.D3?.totalNuuInBucket ?? null;
+      return { bucket: b.bucket, count: total, partial: b.partialBucket };
+    });
   }, [nuuData]);
 
-  const formattedSignup = useMemo(() => {
-    if (!signupData || !signupData.signup_fraction) return [];
-    return signupData.signup_fraction.map((d: any) => ({
-      ...d,
-      fraction: d.fraction === 'N/A' ? null : Number((d.fraction * 100).toFixed(2))
+  const nuuRetentionData = useMemo(() => {
+    const buckets: any[] = nuuData?.metrics?.strictRetention?.buckets ?? [];
+    return buckets.map((b: any) => {
+      const pct = (h: any) => {
+        if (h == null) return null;
+        const v = Number(h.retentionPercent);
+        return isNaN(v) ? null : +v.toFixed(2);
+      };
+      return {
+        bucket: b.bucket,
+        D1:  pct(b.horizons?.D1),
+        D3:  pct(b.horizons?.D3),
+        D7:  pct(b.horizons?.D7),
+        D30: pct(b.horizons?.D30),
+        partial: b.partialBucket,
+      };
+    });
+  }, [nuuData]);
+
+  const signupChartData = useMemo(() => {
+    const buckets: any[] = signupData?.metric?.buckets ?? [];
+    return buckets.map((b: any) => ({
+      bucket:        b.bucket,
+      signupFraction: b.signupFractionPercent ?? null, // already in %
+      activeUsers:   b.activeUsers ?? 0,
+      signups:       b.signups ?? 0,
+      partial:       b.partialBucket,
     }));
   }, [signupData]);
 
   const isLoading = nuuLoading || signupLoading;
+  const grain = nuuData?.grain ?? signupData?.grain ?? '';
+  const totalSignups = signupData?.metric?.totalSignups;
+
+  const availableHorizons = useMemo(() => {
+    const first = nuuData?.metrics?.strictRetention?.buckets?.[0]?.horizons ?? {};
+    return Object.keys(first).filter(k => k in HORIZON_COLORS);
+  }, [nuuData]);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">NUU & Signup</h1>
-        <p className="text-muted-foreground">New Unregistered Users and account conversion metrics</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">NUU &amp; Signup</h1>
+          <p className="text-muted-foreground">New Unregistered Users and account conversion metrics</p>
+        </div>
+        <div className="flex gap-2 items-center">
+          {grain && <Badge variant="outline" className="font-mono">{grain}</Badge>}
+          {totalSignups != null && (
+            <Badge variant="secondary" className="font-mono">
+              {totalSignups.toLocaleString()} total signups
+            </Badge>
+          )}
+        </div>
       </div>
-
-      {/* TEMP DEBUG PANEL — shows raw API response so field names can be confirmed */}
-      {(nuuData || nuuError || signupData || signupError) && (
-        <details className="border border-amber-500/40 rounded-lg bg-amber-950/20">
-          <summary className="px-4 py-2 font-mono text-xs text-amber-400 cursor-pointer select-none">
-            🔍 RAW API DATA (debug — remove after fixing field names)
-          </summary>
-          <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="font-mono text-xs text-muted-foreground mb-1">nuu-retention response:</p>
-              <pre className="text-xs font-mono bg-card p-3 rounded overflow-auto max-h-64 text-green-400">
-                {nuuError ? `ERROR: ${nuuError.message}` : JSON.stringify(nuuData, null, 2)}
-              </pre>
-            </div>
-            <div>
-              <p className="font-mono text-xs text-muted-foreground mb-1">signup-fraction response:</p>
-              <pre className="text-xs font-mono bg-card p-3 rounded overflow-auto max-h-64 text-green-400">
-                {signupError ? `ERROR: ${signupError.message}` : JSON.stringify(signupData, null, 2)}
-              </pre>
-            </div>
-          </div>
-        </details>
-      )}
 
       {isLoading ? (
         <div className="grid gap-6">
-          <Skeleton className="h-[400px] w-full" />
-          <Skeleton className="h-[400px] w-full" />
+          <Skeleton className="h-[300px] w-full" />
+          <Skeleton className="h-[300px] w-full" />
+          <Skeleton className="h-[350px] w-full" />
         </div>
       ) : (
         <div className="grid gap-6">
+
+          {/* NUU Volume */}
           <Card>
             <CardHeader>
-              <CardTitle>NUU Growth</CardTitle>
-              <CardDescription>New Unregistered Users volume over time</CardDescription>
+              <CardTitle>NUU Volume</CardTitle>
+              <CardDescription>New Unregistered Users per {grain.toLowerCase() || 'period'}</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[350px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={formattedNuu} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--chart-5))" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="hsl(var(--chart-5))" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <XAxis 
-                      dataKey="bucket" 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                    />
-                    <YAxis 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                    />
-                    <RechartsTooltip 
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
-                      itemStyle={{ fontFamily: 'var(--app-font-mono)', color: 'hsl(var(--chart-5))' }}
-                      labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '8px' }}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="count" 
-                      stroke="hsl(var(--chart-5))" 
-                      fillOpacity={1} 
-                      fill="url(#colorCount)" 
-                      name="NUU Volume"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              {nuuVolumeData.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-12">No NUU data available</p>
+              ) : (
+                <div className="h-[280px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={nuuVolumeData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="nuuGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%"  stopColor="hsl(var(--chart-5))" stopOpacity={0.35}/>
+                          <stop offset="95%" stopColor="hsl(var(--chart-5))" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false}/>
+                      <XAxis dataKey="bucket" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} interval="preserveStartEnd"/>
+                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}/>
+                      <RechartsTooltip {...tooltipStyle} formatter={(v: any) => [v?.toLocaleString(), 'NUU']}/>
+                      <Area type="monotone" dataKey="count" stroke="hsl(var(--chart-5))" strokeWidth={2} fillOpacity={1} fill="url(#nuuGrad)" name="NUU"/>
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </CardContent>
           </Card>
 
+          {/* NUU Strict Retention Curves */}
+          <Card>
+            <CardHeader>
+              <CardTitle>NUU Strict Retention</CardTitle>
+              <CardDescription>% of NUU cohort returning on exactly day N, by cohort week</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {nuuRetentionData.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-12">No NUU retention data available</p>
+              ) : (
+                <div className="h-[280px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={nuuRetentionData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false}/>
+                      <XAxis dataKey="bucket" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} interval="preserveStartEnd"/>
+                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}%`}/>
+                      <RechartsTooltip {...tooltipStyle} formatter={(v: any, name: string) => [`${v?.toFixed(2)}%`, name]}/>
+                      <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'var(--app-font-mono)' }}/>
+                      {availableHorizons.map(h => (
+                        <Line
+                          key={h}
+                          type="monotone"
+                          dataKey={h}
+                          stroke={HORIZON_COLORS[h]}
+                          strokeWidth={2}
+                          dot={false}
+                          activeDot={{ r: 5 }}
+                          connectNulls
+                          name={h}
+                        />
+                      ))}
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Signup Fraction */}
           <Card>
             <CardHeader>
               <CardTitle>Signup Fraction</CardTitle>
-              <CardDescription>Percentage of NUUs that convert to registered accounts</CardDescription>
+              <CardDescription>Signups as % of active users, with weekly active user volume</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[350px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={formattedSignup} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <XAxis 
-                      dataKey="bucket" 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                    />
-                    <YAxis 
-                      yAxisId="left"
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                      domain={[0, 100]}
-                      tickFormatter={(v) => `${v}%`}
-                    />
-                    <YAxis 
-                      yAxisId="right"
-                      orientation="right"
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                    />
-                    <RechartsTooltip 
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
-                      itemStyle={{ fontFamily: 'var(--app-font-mono)' }}
-                      labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '8px' }}
-                    />
-                    <Legend />
-                    <Bar 
-                      yAxisId="right"
-                      dataKey="cohort_size" 
-                      fill="hsl(var(--muted))" 
-                      name="Cohort Size" 
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Line 
-                      yAxisId="left"
-                      type="monotone" 
-                      dataKey="fraction" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={3}
-                      dot={false}
-                      activeDot={{ r: 6 }}
-                      name="Signup Conversion %" 
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
+              {signupChartData.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-12">No signup data available</p>
+              ) : (
+                <div className="h-[320px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={signupChartData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false}/>
+                      <XAxis dataKey="bucket" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} interval="preserveStartEnd"/>
+                      <YAxis
+                        yAxisId="users"
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}
+                      />
+                      <YAxis
+                        yAxisId="pct"
+                        orientation="right"
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => `${v}%`}
+                      />
+                      <RechartsTooltip
+                        {...tooltipStyle}
+                        formatter={(v: any, name: string) => {
+                          if (name === 'Signup %') return [`${Number(v).toFixed(2)}%`, name];
+                          return [v?.toLocaleString(), name];
+                        }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'var(--app-font-mono)' }}/>
+                      <Bar yAxisId="users" dataKey="activeUsers" fill="hsl(var(--muted-foreground)/0.2)" name="Active Users" radius={[3, 3, 0, 0]}/>
+                      <Line yAxisId="pct" type="monotone" dataKey="signupFraction" stroke="hsl(var(--primary))" strokeWidth={3} dot={false} activeDot={{ r: 6 }} name="Signup %"/>
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </CardContent>
           </Card>
+
         </div>
       )}
     </div>

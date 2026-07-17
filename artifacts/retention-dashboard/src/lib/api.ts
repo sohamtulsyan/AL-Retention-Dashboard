@@ -45,8 +45,14 @@ async function fetcher(endpoint: string, options: RequestInit = {}) {
     if (res.status === 204) return null;
 
     const data = await res.json();
-    // TEMP DEBUG — remove once field mapping is confirmed
-    console.error(`[API DEBUG] ${endpoint}:`, JSON.stringify(data).slice(0, 2000));
+    // TEMP DEBUG — logs schema shape (keys/types) so it fits in log capture
+    const schema = (o: any, d = 0): any => {
+      if (d > 3 || o === null || o === undefined) return typeof o;
+      if (Array.isArray(o)) return o.length > 0 ? [schema(o[0], d + 1)] : [];
+      if (typeof o === 'object') return Object.fromEntries(Object.entries(o).map(([k, v]) => [k, schema(v, d + 1)]));
+      return typeof o;
+    };
+    console.error(`[SCHEMA] ${endpoint}:`, JSON.stringify(schema(data)));
     return data;
   } catch (error) {
     console.error(`API Fetch Error [${endpoint}]:`, error);
