@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { useJobs, useCreateJob } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -155,7 +155,7 @@ export default function Jobs() {
                 </TableHeader>
                 <TableBody>
                   {jobs?.map(job => (
-                    <React.Fragment key={job.id}>
+                    <Fragment key={job.id}>
                       <TableRow className="group">
                         <TableCell>
                           <JobStatusIcon status={job.status} />
@@ -163,7 +163,7 @@ export default function Jobs() {
                         <TableCell className="font-mono font-medium">{job.type}</TableCell>
                         <TableCell className="font-mono text-xs uppercase">{job.status}</TableCell>
                         <TableCell className="text-muted-foreground">
-                          {format(parseISO(job.created_at), 'MMM d, HH:mm:ss')}
+                          {job.created_at ? format(parseISO(job.created_at), 'MMM d, HH:mm:ss') : '—'}
                         </TableCell>
                         <TableCell className="text-right">
                           {job.error && (
@@ -187,7 +187,7 @@ export default function Jobs() {
                           </TableCell>
                         </TableRow>
                       )}
-                    </React.Fragment>
+                    </Fragment>
                   ))}
                   {(!jobs || jobs.length === 0) && (
                     <TableRow>

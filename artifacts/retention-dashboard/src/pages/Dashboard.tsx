@@ -151,7 +151,7 @@ export default function Dashboard() {
                     <div>
                       <div className="font-mono text-sm">{job.type}</div>
                       <div className="text-xs text-muted-foreground">
-                        {format(parseISO(job.created_at), 'MMM d, HH:mm:ss')}
+                        {job.created_at ? format(parseISO(job.created_at), 'MMM d, HH:mm:ss') : '—'}
                       </div>
                     </div>
                     <JobStatusBadge status={job.status} />
