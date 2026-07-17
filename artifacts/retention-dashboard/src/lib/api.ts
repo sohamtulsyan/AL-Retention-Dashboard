@@ -28,6 +28,7 @@ async function fetcher(endpoint: string, options: RequestInit = {}) {
   try {
     const res = await fetch(url, {
       ...options,
+      cache: 'no-store',   // bypass browser cache so debug logs always fire
       headers: {
         'Content-Type': 'application/json',
         'X-Target-Url': fastapiUrl,
@@ -43,7 +44,10 @@ async function fetcher(endpoint: string, options: RequestInit = {}) {
     // For 204 No Content
     if (res.status === 204) return null;
 
-    return res.json();
+    const data = await res.json();
+    // TEMP DEBUG — remove once field mapping is confirmed
+    console.error(`[API DEBUG] ${endpoint}:`, JSON.stringify(data).slice(0, 2000));
+    return data;
   } catch (error) {
     console.error(`API Fetch Error [${endpoint}]:`, error);
     throw error;

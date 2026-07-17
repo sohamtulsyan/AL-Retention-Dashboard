@@ -127,7 +127,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             {coverage ? (
-              <Heatmap dates={coverage.dates || []} />
+              <Heatmap dates={(coverage as any).days || (coverage as any).dates || []} />
             ) : (
               <Skeleton className="h-32 w-full" />
             )}
@@ -151,7 +151,7 @@ export default function Dashboard() {
                     <div>
                       <div className="font-mono text-sm">{job.type}</div>
                       <div className="text-xs text-muted-foreground">
-                        {job.created_at ? format(parseISO(job.created_at), 'MMM d, HH:mm:ss') : '—'}
+                        {job.created_at ? format(new Date(job.created_at), 'MMM d, HH:mm:ss') : '—'}
                       </div>
                     </div>
                     <JobStatusBadge status={job.status} />

@@ -163,7 +163,7 @@ export default function Jobs() {
                         <TableCell className="font-mono font-medium">{job.type}</TableCell>
                         <TableCell className="font-mono text-xs uppercase">{job.status}</TableCell>
                         <TableCell className="text-muted-foreground">
-                          {job.created_at ? format(parseISO(job.created_at), 'MMM d, HH:mm:ss') : '—'}
+                          {job.created_at ? format(new Date(job.created_at), 'MMM d, HH:mm:ss') : '—'}
                         </TableCell>
                         <TableCell className="text-right">
                           {job.error && (

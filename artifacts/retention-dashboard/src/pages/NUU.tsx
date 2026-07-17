@@ -5,8 +5,8 @@ import { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip 
 import { useMemo } from 'react';
 
 export default function NUU() {
-  const { data: nuuData, isLoading: nuuLoading } = useNuuRetention();
-  const { data: signupData, isLoading: signupLoading } = useSignupFraction();
+  const { data: nuuData, isLoading: nuuLoading, error: nuuError } = useNuuRetention();
+  const { data: signupData, isLoading: signupLoading, error: signupError } = useSignupFraction();
 
   const formattedNuu = useMemo(() => {
     if (!nuuData || !nuuData.nuu_counts) return [];
@@ -32,6 +32,29 @@ export default function NUU() {
         <h1 className="text-3xl font-bold tracking-tight">NUU & Signup</h1>
         <p className="text-muted-foreground">New Unregistered Users and account conversion metrics</p>
       </div>
+
+      {/* TEMP DEBUG PANEL — shows raw API response so field names can be confirmed */}
+      {(nuuData || nuuError || signupData || signupError) && (
+        <details className="border border-amber-500/40 rounded-lg bg-amber-950/20">
+          <summary className="px-4 py-2 font-mono text-xs text-amber-400 cursor-pointer select-none">
+            🔍 RAW API DATA (debug — remove after fixing field names)
+          </summary>
+          <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="font-mono text-xs text-muted-foreground mb-1">nuu-retention response:</p>
+              <pre className="text-xs font-mono bg-card p-3 rounded overflow-auto max-h-64 text-green-400">
+                {nuuError ? `ERROR: ${nuuError.message}` : JSON.stringify(nuuData, null, 2)}
+              </pre>
+            </div>
+            <div>
+              <p className="font-mono text-xs text-muted-foreground mb-1">signup-fraction response:</p>
+              <pre className="text-xs font-mono bg-card p-3 rounded overflow-auto max-h-64 text-green-400">
+                {signupError ? `ERROR: ${signupError.message}` : JSON.stringify(signupData, null, 2)}
+              </pre>
+            </div>
+          </div>
+        </details>
+      )}
 
       {isLoading ? (
         <div className="grid gap-6">
