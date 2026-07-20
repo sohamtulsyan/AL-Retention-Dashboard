@@ -1,45 +1,36 @@
-# [Project name]
+# AL Retention Dashboard
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+React dashboard for the retention pipeline. Proxies API calls to an external FastAPI backend via the Express api-server.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/retention-dashboard run dev` — Vite dev server (port from `PORT` env)
+- `pnpm --filter @workspace/api-server run dev` — Express proxy server (port 8080)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env (set by Replit artifacts): `PORT`, `BASE_PATH` for the dashboard; `DATABASE_URL` optional (no tables yet)
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Frontend: React 19, Vite 7, Tailwind 4, Recharts, TanStack Query
+- API proxy: Express 5 (forwards `/api/fastapi-proxy/*` to upstream FastAPI)
+- Backend: external FastAPI retention API (configure URL in Settings page)
 
-## Where things live
+## Deployment
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+1. Push to GitHub (`origin` → Replit syncs automatically)
+2. Replit builds both artifacts: retention-dashboard (static) + api-server (Node)
+3. In the dashboard **Config** page, set the FastAPI base URL (e.g. your Render deployment)
 
-## Architecture decisions
+## Architecture
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
-
-## Product
-
-_Describe the high-level user-facing capabilities of this app once they exist._
-
-## User preferences
-
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Browser → Vite/static dashboard → `/api/fastapi-proxy/*` → Express → FastAPI
+- FastAPI URL stored in `localStorage` (`retention_api_url`); passed as `X-Target-Url` header or `_target` query param
+- Chart images use `_target` query param since `<img>` cannot set headers
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- `pnpm-workspace.yaml` has linux-x64 platform overrides for Replit — do not remove for deployment
+- Vite config requires `PORT` and `BASE_PATH` env vars (Replit sets these via artifact.toml)
+- post-merge runs `pnpm install --frozen-lockfile` then optional DB push

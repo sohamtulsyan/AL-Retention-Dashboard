@@ -38,6 +38,8 @@ proxyRouter.use("/fastapi-proxy", async (req, res) => {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     "Accept": "application/json, image/*, */*",
+    // ngrok free interstitial blocks non-browser upstream calls without this
+    "ngrok-skip-browser-warning": "true",
   };
 
   const fetchOptions: RequestInit = {

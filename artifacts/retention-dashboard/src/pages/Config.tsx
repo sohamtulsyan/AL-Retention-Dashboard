@@ -46,8 +46,6 @@ export default function Config() {
       timelineStart: formData.timelineStart,
       timelineEnd: formData.timelineEnd,
       grain: formData.grain,
-      windowStart: formData.windowStart,
-      windowEnd: formData.windowEnd,
       strictHorizons: formData.strictHorizons,
       windowHorizons: formData.windowHorizons,
     };
@@ -164,7 +162,10 @@ export default function Config() {
                 </div>
 
                 <div className="space-y-2 border-t pt-4 mt-2 col-span-1 md:col-span-2">
-                  <h4 className="font-medium text-sm text-primary mb-4">Timeline Filters</h4>
+                  <h4 className="font-medium text-sm text-primary mb-4">Analysis Period</h4>
+                  <p className="text-xs text-muted-foreground -mt-2 mb-2">
+                    Used for all metrics — user growth, retention, NUU, and signup analysis.
+                  </p>
                 </div>
 
                 <div className="space-y-2">
@@ -183,26 +184,6 @@ export default function Config() {
                     type="date"
                     value={formData.timelineEnd || ''} 
                     onChange={e => handleChange('timelineEnd', e.target.value)}
-                    className="font-mono"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Window Start</Label>
-                  <Input 
-                    type="date"
-                    value={formData.windowStart || ''} 
-                    onChange={e => handleChange('windowStart', e.target.value)}
-                    className="font-mono"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Window End</Label>
-                  <Input 
-                    type="date"
-                    value={formData.windowEnd || ''} 
-                    onChange={e => handleChange('windowEnd', e.target.value)}
                     className="font-mono"
                   />
                 </div>

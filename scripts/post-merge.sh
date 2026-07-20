@@ -1,4 +1,5 @@
 #!/bin/bash
 set -e
 pnpm install --frozen-lockfile
-pnpm --filter db push
+# DB schema is empty — skip push until tables are defined
+# pnpm --filter @workspace/db run push

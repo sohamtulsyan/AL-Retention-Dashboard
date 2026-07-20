@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-// The FastAPI base URL is stored in localStorage (configurable via Settings page).
-// All requests are routed through the Express proxy at /api/fastapi-proxy/* to avoid
-// CORS preflight failures — the proxy calls FastAPI server-to-server.
+// FastAPI base URL is stored in localStorage (Settings page).
+// Browser calls go to same-origin /api/fastapi-proxy/* (Vite → Express),
+// and Express forwards server-to-server to FastAPI (avoids browser CORS).
 const PROXY_BASE = '/api/fastapi-proxy';
 
 export const getApiUrl = () => {
@@ -15,7 +15,7 @@ export const setApiUrl = (url: string) => {
   localStorage.setItem('retention_api_url', url);
 };
 
-// For <img src="..."> tags where we can't set headers, pass the FastAPI URL as _target param.
+// For <img src> where we can't set headers, pass FastAPI URL as _target.
 export const getChartUrl = (name: string) => {
   const target = encodeURIComponent(getApiUrl().replace(/\/$/, ''));
   return `${PROXY_BASE}/api/v1/artifacts/charts/${name}?_target=${target}`;
@@ -28,7 +28,7 @@ async function fetcher(endpoint: string, options: RequestInit = {}) {
   try {
     const res = await fetch(url, {
       ...options,
-      cache: 'no-store',   // bypass browser cache so debug logs always fire
+      cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
         'X-Target-Url': fastapiUrl,
@@ -41,19 +41,9 @@ async function fetcher(endpoint: string, options: RequestInit = {}) {
       throw new Error(`API Error: ${res.status} - ${errorText}`);
     }
 
-    // For 204 No Content
     if (res.status === 204) return null;
 
-    const data = await res.json();
-    // TEMP DEBUG — logs schema shape (keys/types) so it fits in log capture
-    const schema = (o: any, d = 0): any => {
-      if (d > 3 || o === null || o === undefined) return typeof o;
-      if (Array.isArray(o)) return o.length > 0 ? [schema(o[0], d + 1)] : [];
-      if (typeof o === 'object') return Object.fromEntries(Object.entries(o).map(([k, v]) => [k, schema(v, d + 1)]));
-      return typeof o;
-    };
-    console.error(`[SCHEMA] ${endpoint}:`, JSON.stringify(schema(data)));
-    return data;
+    return await res.json();
   } catch (error) {
     console.error(`API Fetch Error [${endpoint}]:`, error);
     throw error;
@@ -69,8 +59,6 @@ export interface Config {
   timelineStart?: string;
   timelineEnd?: string;
   grain?: 'Daily' | 'Weekly' | 'Monthly';
-  windowStart?: string;
-  windowEnd?: string;
   strictHorizons?: string;
   windowHorizons?: string;
   rateLimitRps?: number;
@@ -83,14 +71,13 @@ export interface Job {
   type: string;
   status: 'pending' | 'running' | 'succeeded' | 'failed';
   params?: Record<string, any>;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt?: string;
   error?: string;
 }
 
 // Hooks
 
-// Config
 export const useConfig = () => {
   return useQuery<Config>({
     queryKey: ['config'],
@@ -99,7 +86,7 @@ export const useConfig = () => {
   });
 };
 
-export const useUpdateConfig = () => {
+export const useUpdateConfig = (opts?: { silent?: boolean }) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Partial<Config>) =>
@@ -109,7 +96,7 @@ export const useUpdateConfig = () => {
       }),
     onSuccess: (data) => {
       queryClient.setQueryData(['config'], data);
-      toast.success('Configuration updated');
+      if (!opts?.silent) toast.success('Configuration updated');
     },
     onError: (err: Error) => {
       toast.error('Failed to update config: ' + err.message);
@@ -117,7 +104,6 @@ export const useUpdateConfig = () => {
   });
 };
 
-// Jobs
 export const useJobs = (limit = 20) => {
   return useQuery<Job[]>({
     queryKey: ['jobs', { limit }],
@@ -144,14 +130,30 @@ export const useJob = (id: string) => {
   });
 };
 
+export const createJob = (data: { type: string; params?: any }) =>
+  fetcher('/api/v1/jobs', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }) as Promise<Job>;
+
+/** Poll until a job leaves pending/running (or timeout). */
+export async function waitForJob(
+  id: string,
+  { intervalMs = 2000, timeoutMs = 10 * 60 * 1000 } = {},
+): Promise<Job> {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    const job = (await fetcher(`/api/v1/jobs/${id}`)) as Job;
+    if (job.status !== 'pending' && job.status !== 'running') return job;
+    await new Promise((r) => setTimeout(r, intervalMs));
+  }
+  throw new Error(`Job ${id} timed out after ${timeoutMs}ms`);
+}
+
 export const useCreateJob = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: { type: string; params?: any }) =>
-      fetcher('/api/v1/jobs', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      }),
+    mutationFn: createJob,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       toast.success('Job queued successfully');
@@ -162,9 +164,8 @@ export const useCreateJob = () => {
   });
 };
 
-// Data & Analysis
 export const useCoverage = () => {
-  return useQuery<{ dates: string[] }>({
+  return useQuery<{ days?: string[]; dates?: string[]; dayCount?: number }>({
     queryKey: ['coverage'],
     queryFn: () => fetcher('/api/v1/data/coverage'),
     retry: false,
@@ -195,7 +196,15 @@ export const useSignupFraction = () => {
   });
 };
 
-// Charts
+/** Signups / NUU × 100 (weekly ISO buckets). */
+export const useNuuSignupFraction = () => {
+  return useQuery<any>({
+    queryKey: ['nuu-signup-fraction'],
+    queryFn: () => fetcher('/api/v1/results/nuu-signup-fraction'),
+    retry: false,
+  });
+};
+
 export const useCharts = () => {
   return useQuery<{ charts: string[] }>({
     queryKey: ['charts'],

@@ -1,33 +1,89 @@
 import { useAnalysis } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useState, useMemo } from 'react';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend, AreaChart, Area, ComposedChart } from 'recharts';
+import { Badge } from '@/components/ui/badge';
+import { useMemo } from 'react';
+import { bucketAxisBottomMargin } from '@/lib/bucketLabels';
+import { createBucketAxisTick } from '@/lib/bucketAxisTick';
+import { filterEdgeCensoredBuckets } from '@/lib/retentionCensoring';
+import {
+  BarChart,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  Legend,
+  ComposedChart,
+} from 'recharts';
+
+const tooltipStyle = {
+  contentStyle: {
+    backgroundColor: 'hsl(var(--card))',
+    borderColor: 'hsl(var(--border))',
+    borderRadius: '8px',
+  },
+  itemStyle: { fontFamily: 'var(--app-font-mono)' },
+  labelStyle: { color: 'hsl(var(--muted-foreground))', marginBottom: '8px' },
+};
 
 export default function Analysis() {
   const { data: analysis, isLoading, error } = useAnalysis();
-  const [grain, setGrain] = useState<string>('Daily');
 
-  const filteredData = useMemo(() => {
-    if (!analysis) return { userGrowth: [], engagement: [], playState: [] };
-    
+  const chartData = useMemo(() => {
+    const metrics = analysis?.metrics;
+    if (!metrics) return { userGrowth: [], engagement: [], playState: [] };
+
     return {
-      userGrowth: (analysis.user_growth || []).filter((d: any) => d.grain === grain).map((d: any) => ({
-        ...d,
-        value: d.value === 'N/A' ? null : d.value
+      userGrowth: filterEdgeCensoredBuckets(metrics.userGrowth?.buckets ?? []).map((d: any) => ({
+        bucket: d.bucket,
+        coveredStart: d.coveredStart,
+        coveredEnd: d.coveredEnd,
+        value: d.userGrowth ?? null,
       })),
-      engagement: (analysis.engagement || []).filter((d: any) => d.grain === grain).map((d: any) => ({
-        ...d,
-        minutes: d.median_screen_time === 'N/A' ? null : d.median_screen_time / 60
+      engagement: filterEdgeCensoredBuckets(metrics.engagement?.buckets ?? []).map((d: any) => ({
+        bucket: d.bucket,
+        coveredStart: d.coveredStart,
+        coveredEnd: d.coveredEnd,
+        minutes:
+          d.medianScreenTimeSeconds == null
+            ? null
+            : +(Number(d.medianScreenTimeSeconds) / 60).toFixed(2),
+        playCount: d.qualifyingPlays ?? 0,
       })),
-      playState: (analysis.play_state || []).filter((d: any) => {
-        // Find if this bucket has Daily data - backend doesn't explicitly grain play_state
-        return true; 
-      })
+      playState: filterEdgeCensoredBuckets(metrics.playState?.buckets ?? []).map((d: any) => ({
+        bucket: d.bucket,
+        coveredStart: d.coveredStart,
+        coveredEnd: d.coveredEnd,
+        loaded: d.loadedCount ?? 0,
+        solving: d.solvingCount ?? 0,
+        completed: d.completedCount ?? 0,
+      })),
     };
-  }, [analysis, grain]);
+  }, [analysis]);
+
+  const grain = analysis?.grain;
+  const axisBottom = bucketAxisBottomMargin(grain);
+
+  const rangeAt = (rows: { coveredStart?: string; coveredEnd?: string }[]) => (index: number) => ({
+    start: rows[index]?.coveredStart,
+    end: rows[index]?.coveredEnd,
+  });
+
+  const userGrowthTick = useMemo(
+    () => createBucketAxisTick(grain, rangeAt(chartData.userGrowth)),
+    [grain, chartData.userGrowth],
+  );
+  const engagementTick = useMemo(
+    () => createBucketAxisTick(grain, rangeAt(chartData.engagement)),
+    [grain, chartData.engagement],
+  );
+  const playStateTick = useMemo(
+    () => createBucketAxisTick(grain, rangeAt(chartData.playState)),
+    [grain, chartData.playState],
+  );
 
   if (error) {
     return (
@@ -45,18 +101,11 @@ export default function Analysis() {
           <h1 className="text-3xl font-bold tracking-tight">Behavior Analysis</h1>
           <p className="text-muted-foreground">User growth, engagement time, and funnel progress</p>
         </div>
-        <div className="w-48">
-          <Select value={grain} onValueChange={setGrain}>
-            <SelectTrigger className="font-mono">
-              <SelectValue placeholder="Select Grain" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Daily">Daily Grain</SelectItem>
-              <SelectItem value="Weekly">Weekly Grain</SelectItem>
-              <SelectItem value="Monthly">Monthly Grain</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {grain && (
+          <Badge variant="outline" className="font-mono">
+            {grain}
+          </Badge>
+        )}
       </div>
 
       {isLoading ? (
@@ -64,110 +113,107 @@ export default function Analysis() {
           <Skeleton className="h-[400px] w-full" />
           <Skeleton className="h-[400px] w-full" />
         </div>
-      ) : analysis ? (
+      ) : analysis?.metrics ? (
         <div className="grid gap-6 grid-cols-1">
-          
           <Card>
             <CardHeader>
-              <CardTitle>Active Users ({grain})</CardTitle>
+              <CardTitle>Active Users{grain ? ` (${grain})` : ''}</CardTitle>
               <CardDescription>Distinct users active per period</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[350px] w-full mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={filteredData.userGrowth} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <XAxis 
-                      dataKey="bucket" 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                    />
-                    <YAxis 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                      tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : v}
-                    />
-                    <RechartsTooltip 
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
-                      itemStyle={{ color: 'hsl(var(--foreground))', fontFamily: 'var(--app-font-mono)' }}
-                      labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '8px' }}
-                    />
-                    <Bar 
-                      dataKey="value" 
-                      fill="hsl(var(--primary))" 
-                      radius={[4, 4, 0, 0]} 
-                      name="Active Users"
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              {chartData.userGrowth.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-12">No user growth data</p>
+              ) : (
+                <div className="h-[350px] w-full mt-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData.userGrowth} margin={{ top: 10, right: 30, left: 0, bottom: axisBottom }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                      <XAxis
+                        dataKey="bucket"
+                        stroke="hsl(var(--muted-foreground))"
+                        tickLine={false}
+                        axisLine={false}
+                        interval="preserveStartEnd"
+                        tick={userGrowthTick}
+                      />
+                      <YAxis
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => (v >= 1000 ? `${v / 1000}k` : v)}
+                      />
+                      <RechartsTooltip {...tooltipStyle} />
+                      <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Active Users" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
               <CardTitle>Median Screen Time</CardTitle>
-              <CardDescription>Median minutes played per active user vs total play count</CardDescription>
+              <CardDescription>Median minutes played vs qualifying play count</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[350px] w-full mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={filteredData.engagement} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <XAxis 
-                      dataKey="bucket" 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                    />
-                    <YAxis 
-                      yAxisId="left"
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                      tickFormatter={(v) => `${v}m`}
-                    />
-                    <YAxis 
-                      yAxisId="right"
-                      orientation="right"
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                      tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(1)}k` : v}
-                    />
-                    <RechartsTooltip 
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
-                      itemStyle={{ fontFamily: 'var(--app-font-mono)' }}
-                      labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '8px' }}
-                    />
-                    <Legend />
-                    <Bar 
-                      yAxisId="right"
-                      dataKey="play_count" 
-                      fill="hsl(var(--muted))" 
-                      name="Total Play Count" 
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Line 
-                      yAxisId="left"
-                      type="monotone" 
-                      dataKey="minutes" 
-                      stroke="hsl(var(--chart-2))" 
-                      strokeWidth={3}
-                      dot={false}
-                      activeDot={{ r: 6 }}
-                      name="Median Minutes" 
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
+              {chartData.engagement.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-12">No engagement data</p>
+              ) : (
+                <div className="h-[350px] w-full mt-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={chartData.engagement} margin={{ top: 10, right: 30, left: 0, bottom: axisBottom }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                      <XAxis
+                        dataKey="bucket"
+                        stroke="hsl(var(--muted-foreground))"
+                        tickLine={false}
+                        axisLine={false}
+                        interval="preserveStartEnd"
+                        tick={engagementTick}
+                      />
+                      <YAxis
+                        yAxisId="left"
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => `${v}m`}
+                      />
+                      <YAxis
+                        yAxisId="right"
+                        orientation="right"
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v)}
+                      />
+                      <RechartsTooltip {...tooltipStyle} />
+                      <Legend />
+                      <Bar
+                        yAxisId="right"
+                        dataKey="playCount"
+                        fill="hsl(var(--muted))"
+                        name="Qualifying Plays"
+                        radius={[4, 4, 0, 0]}
+                      />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="minutes"
+                        stroke="hsl(var(--chart-2))"
+                        strokeWidth={3}
+                        dot={false}
+                        activeDot={{ r: 6 }}
+                        connectNulls={false}
+                        name="Median Minutes"
+                      />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -177,41 +223,48 @@ export default function Analysis() {
               <CardDescription>Funnel conversion (Loaded → Solving → Completed)</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[350px] w-full mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={filteredData.playState} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <XAxis 
-                      dataKey="bucket" 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                    />
-                    <YAxis 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                    />
-                    <RechartsTooltip 
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
-                      itemStyle={{ fontFamily: 'var(--app-font-mono)' }}
-                    />
-                    <Legend />
-                    <Bar dataKey="loaded" stackId="a" fill="hsl(var(--muted))" name="Loaded" />
-                    <Bar dataKey="solving" stackId="a" fill="hsl(var(--chart-2))" name="Solving" />
-                    <Bar dataKey="completed" stackId="a" fill="hsl(var(--primary))" name="Completed" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              {chartData.playState.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-12">No play state data</p>
+              ) : (
+                <div className="h-[350px] w-full mt-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData.playState} margin={{ top: 10, right: 30, left: 0, bottom: axisBottom }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                      <XAxis
+                        dataKey="bucket"
+                        stroke="hsl(var(--muted-foreground))"
+                        tickLine={false}
+                        axisLine={false}
+                        interval="preserveStartEnd"
+                        tick={playStateTick}
+                      />
+                      <YAxis
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <RechartsTooltip {...tooltipStyle} />
+                      <Legend />
+                      <Bar dataKey="loaded" stackId="a" fill="hsl(var(--muted))" name="Loaded" />
+                      <Bar dataKey="solving" stackId="a" fill="hsl(var(--chart-2))" name="Solving" />
+                      <Bar
+                        dataKey="completed"
+                        stackId="a"
+                        fill="hsl(var(--primary))"
+                        name="Completed"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </CardContent>
           </Card>
-
         </div>
       ) : (
         <div className="text-center p-12 border rounded-lg border-dashed">
-          <p className="text-muted-foreground">No analysis data found.</p>
+          <p className="text-muted-foreground">No analysis data found. Run an analyze/pipeline job first.</p>
         </div>
       )}
     </div>

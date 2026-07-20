@@ -1,8 +1,8 @@
 import * as React from "react"
 import { Link, useLocation } from "wouter"
-import { Activity, BarChart2, PieChart, Settings, FileBox, LineChart, Terminal, Zap, HardDrive } from "lucide-react"
+import { Activity, BarChart2, Settings, FileBox, LineChart, Terminal, Zap, HardDrive } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { GrainControl } from "@/components/layout/GrainControl"
 
 interface AppLayoutProps {
   children: React.ReactNode
@@ -66,6 +66,14 @@ export function AppLayout({ children }: AppLayoutProps) {
       </div>
 
       <main className="flex-1 md:pl-64">
+        <div className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <div className="flex items-center justify-between gap-4 px-6 py-3 md:px-8 max-w-7xl mx-auto">
+            <p className="text-xs text-muted-foreground hidden sm:block">
+              Analysis grain applies to all metrics including NUU. Changing it recomputes results.
+            </p>
+            <GrainControl />
+          </div>
+        </div>
         <div className="p-6 md:p-8 max-w-7xl mx-auto">
           {children}
         </div>

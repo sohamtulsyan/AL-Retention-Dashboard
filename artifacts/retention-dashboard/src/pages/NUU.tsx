@@ -1,4 +1,4 @@
-import { useNuuRetention, useSignupFraction } from '@/lib/api';
+import { useNuuRetention, useSignupFraction, useNuuSignupFraction } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ import {
   ComposedChart, Bar,
 } from 'recharts';
 import { useMemo } from 'react';
+import { filterEdgeCensoredBuckets, toRetentionPercent } from '@/lib/retentionCensoring';
 
 const HORIZON_COLORS: Record<string, string> = {
   D1:  'hsl(var(--chart-1))',
@@ -25,53 +26,68 @@ const tooltipStyle = {
   labelStyle:   { color: 'hsl(var(--muted-foreground))', marginBottom: '8px', fontWeight: 600 },
 };
 
+function toPct(v: unknown): number | null {
+  if (v == null || v === 'N/A') return null;
+  const n = Number(v);
+  return Number.isNaN(n) ? null : +n.toFixed(2);
+}
+
 export default function NUU() {
   const { data: nuuData, isLoading: nuuLoading } = useNuuRetention();
   const { data: signupData, isLoading: signupLoading } = useSignupFraction();
+  const { data: nuuSignupData, isLoading: nuuSignupLoading } = useNuuSignupFraction();
 
   // Flatten strictRetention buckets into chart rows
   const nuuVolumeData = useMemo(() => {
     const buckets: any[] = nuuData?.metrics?.strictRetention?.buckets ?? [];
-    return buckets.map((b: any) => {
-      // totalNuuInBucket is the same across all horizons — prefer D1, fall back to D3
+    return filterEdgeCensoredBuckets(buckets).map((b: any) => {
       const total = b.horizons?.D1?.totalNuuInBucket ?? b.horizons?.D3?.totalNuuInBucket ?? null;
-      return { bucket: b.bucket, count: total, partial: b.partialBucket };
+      return { bucket: b.bucket, count: total };
     });
   }, [nuuData]);
 
   const nuuRetentionData = useMemo(() => {
     const buckets: any[] = nuuData?.metrics?.strictRetention?.buckets ?? [];
-    return buckets.map((b: any) => {
-      const pct = (h: any) => {
-        if (h == null) return null;
-        const v = Number(h.retentionPercent);
-        return isNaN(v) ? null : +v.toFixed(2);
-      };
+    const timelineEnd = nuuData?.timelineEnd as string | undefined;
+    return filterEdgeCensoredBuckets(buckets).map((b: any) => {
+      const ctx = (key: string) => ({
+        horizonKey: key,
+        coveredStart: b.coveredStart as string | undefined,
+        timelineEnd,
+      });
       return {
         bucket: b.bucket,
-        D1:  pct(b.horizons?.D1),
-        D3:  pct(b.horizons?.D3),
-        D7:  pct(b.horizons?.D7),
-        D30: pct(b.horizons?.D30),
-        partial: b.partialBucket,
+        D1: toRetentionPercent(b.horizons?.D1, ctx('D1')),
+        D3: toRetentionPercent(b.horizons?.D3, ctx('D3')),
+        D7: toRetentionPercent(b.horizons?.D7, ctx('D7')),
+        D30: toRetentionPercent(b.horizons?.D30, ctx('D30')),
       };
     });
   }, [nuuData]);
 
   const signupChartData = useMemo(() => {
     const buckets: any[] = signupData?.metric?.buckets ?? [];
-    return buckets.map((b: any) => ({
-      bucket:        b.bucket,
-      signupFraction: b.signupFractionPercent ?? null, // already in %
-      activeUsers:   b.activeUsers ?? 0,
-      signups:       b.signups ?? 0,
-      partial:       b.partialBucket,
+    return filterEdgeCensoredBuckets(buckets).map((b: any) => ({
+      bucket: b.bucket,
+      signupFraction: toPct(b.signupFractionPercent),
+      activeUsers: b.activeUsers ?? 0,
+      signups: b.signups ?? 0,
     }));
   }, [signupData]);
 
-  const isLoading = nuuLoading || signupLoading;
+  const nuuSignupChartData = useMemo(() => {
+    const buckets: any[] = nuuSignupData?.buckets ?? [];
+    return buckets.map((b: any) => ({
+      bucket: b.bucket,
+      signupFraction: toPct(b.signupFractionPercent),
+      nuuCount: b.nuuCount ?? 0,
+      signups: b.signups ?? 0,
+    }));
+  }, [nuuSignupData]);
+
+  const isLoading = nuuLoading || signupLoading || nuuSignupLoading;
   const grain = nuuData?.grain ?? signupData?.grain ?? '';
-  const totalSignups = signupData?.metric?.totalSignups;
+  const totalSignups = signupData?.metric?.totalSignups ?? nuuSignupData?.totalSignups;
 
   const availableHorizons = useMemo(() => {
     const first = nuuData?.metrics?.strictRetention?.buckets?.[0]?.horizons ?? {};
@@ -100,6 +116,7 @@ export default function NUU() {
           <Skeleton className="h-[300px] w-full" />
           <Skeleton className="h-[300px] w-full" />
           <Skeleton className="h-[350px] w-full" />
+          <Skeleton className="h-[320px] w-full" />
         </div>
       ) : (
         <div className="grid gap-6">
@@ -162,7 +179,7 @@ export default function NUU() {
                           strokeWidth={2}
                           dot={false}
                           activeDot={{ r: 5 }}
-                          connectNulls
+                          connectNulls={false}
                           name={h}
                         />
                       ))}
@@ -173,7 +190,70 @@ export default function NUU() {
             </CardContent>
           </Card>
 
-          {/* Signup Fraction */}
+          {/* Signup Fraction of NUUs */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Signup Fraction of NUUs</CardTitle>
+              <CardDescription>
+                Signups / new unique users (%) — conversion of NUUs into accounts
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {nuuSignupChartData.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-12">
+                  No NUU signup fraction data — run the <span className="font-mono">nuu_signup_fraction</span> job
+                </p>
+              ) : (
+                <div className="h-[320px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={nuuSignupChartData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false}/>
+                      <XAxis dataKey="bucket" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} interval="preserveStartEnd"/>
+                      <YAxis
+                        yAxisId="users"
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}
+                      />
+                      <YAxis
+                        yAxisId="pct"
+                        orientation="right"
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => `${v}%`}
+                      />
+                      <RechartsTooltip
+                        {...tooltipStyle}
+                        formatter={(v: any, name: string) => {
+                          if (name === 'Signup / NUU %') return [`${Number(v).toFixed(2)}%`, name];
+                          return [v?.toLocaleString(), name];
+                        }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'var(--app-font-mono)' }}/>
+                      <Bar yAxisId="users" dataKey="nuuCount" fill="hsl(var(--chart-5)/0.25)" name="NUU" radius={[3, 3, 0, 0]}/>
+                      <Line
+                        yAxisId="pct"
+                        type="monotone"
+                        dataKey="signupFraction"
+                        stroke="#1f4e79"
+                        strokeWidth={3}
+                        dot={false}
+                        activeDot={{ r: 6 }}
+                        connectNulls={false}
+                        name="Signup / NUU %"
+                      />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Signup Fraction (active users) */}
           <Card>
             <CardHeader>
               <CardTitle>Signup Fraction</CardTitle>
@@ -214,7 +294,7 @@ export default function NUU() {
                       />
                       <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'var(--app-font-mono)' }}/>
                       <Bar yAxisId="users" dataKey="activeUsers" fill="hsl(var(--muted-foreground)/0.2)" name="Active Users" radius={[3, 3, 0, 0]}/>
-                      <Line yAxisId="pct" type="monotone" dataKey="signupFraction" stroke="hsl(var(--primary))" strokeWidth={3} dot={false} activeDot={{ r: 6 }} name="Signup %"/>
+                      <Line yAxisId="pct" type="monotone" dataKey="signupFraction" stroke="hsl(var(--primary))" strokeWidth={3} dot={false} activeDot={{ r: 6 }} connectNulls={false} name="Signup %"/>
                     </ComposedChart>
                   </ResponsiveContainer>
                 </div>

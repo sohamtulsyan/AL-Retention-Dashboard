@@ -27,6 +27,9 @@ if (!basePath) {
   );
 }
 
+// Express api-server (fastapi-proxy) — override with EXPRESS_URL if needed.
+const expressUrl = process.env.EXPRESS_URL || 'http://localhost:5000';
+
 export default defineConfig({
   base: basePath,
   plugins: [
@@ -71,6 +74,13 @@ export default defineConfig({
     allowedHosts: true,
     fs: {
       strict: true,
+    },
+    // Browser → Vite :5173/api/* → Express :5000/api/* → FastAPI
+    proxy: {
+      '/api': {
+        target: expressUrl,
+        changeOrigin: true,
+      },
     },
   },
   preview: {
