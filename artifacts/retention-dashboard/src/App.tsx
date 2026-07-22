@@ -9,7 +9,7 @@ import Dashboard from '@/pages/Dashboard';
 import Analysis from '@/pages/Analysis';
 import Retention from '@/pages/Retention';
 import NUU from '@/pages/NUU';
-import Jobs from '@/pages/Jobs';
+import OUU from '@/pages/OUU';
 import Charts from '@/pages/Charts';
 import Config from '@/pages/Config';
 
@@ -23,7 +23,7 @@ function Router() {
         <Route path="/analysis" component={Analysis} />
         <Route path="/retention" component={Retention} />
         <Route path="/nuu" component={NUU} />
-        <Route path="/jobs" component={Jobs} />
+        <Route path="/ouu" component={OUU} />
         <Route path="/charts" component={Charts} />
         <Route path="/config" component={Config} />
         <Route component={NotFound} />

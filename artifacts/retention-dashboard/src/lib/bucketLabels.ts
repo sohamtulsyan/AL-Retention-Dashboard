@@ -1,4 +1,4 @@
-import { format, parseISO } from 'date-fns';
+import { format, getISOWeek, parse, parseISO } from 'date-fns';
 
 type Grain = 'Daily' | 'Weekly' | 'Monthly' | string | undefined;
 
@@ -7,21 +7,12 @@ export interface BucketTickLines {
   secondary?: string;
 }
 
-function parseWeekStart(bucket: string): Date | null {
+/** Monday of the ISO week encoded in `YYYY-Www`. */
+function parseIsoWeekMonday(bucket: string): Date | null {
   const m = /^(\d{4})-W(\d{2})$/.exec(bucket);
   if (!m) return null;
-  const year = Number(m[1]);
-  const week = Number(m[2]);
-  const jan4 = new Date(Date.UTC(year, 0, 4));
-  const jan4Day = jan4.getUTCDay() || 7;
-  const isoWeek1Monday = new Date(jan4);
-  isoWeek1Monday.setUTCDate(jan4.getUTCDate() - jan4Day + 1);
-  isoWeek1Monday.setUTCDate(isoWeek1Monday.getUTCDate() + (week - 1) * 7);
-  return new Date(
-    isoWeek1Monday.getUTCFullYear(),
-    isoWeek1Monday.getUTCMonth(),
-    isoWeek1Monday.getUTCDate(),
-  );
+  const monday = parse(`${m[1]}-W${m[2]}-1`, "RRRR-'W'II-i", new Date());
+  return Number.isNaN(monday.getTime()) ? null : monday;
 }
 
 function parseMonthStart(bucket: string): Date | null {
@@ -35,12 +26,18 @@ function parseWeekNumber(bucket: string): number | null {
   return m ? Number(m[2]) : null;
 }
 
+function parseDayBucket(bucket: string): Date | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(bucket)) return null;
+  const parsed = parseISO(bucket);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
 export function bucketStartDate(bucket: string, coveredStart?: string): Date | null {
   if (coveredStart) {
     const parsed = parseISO(coveredStart);
     if (!Number.isNaN(parsed.getTime())) return parsed;
   }
-  return parseWeekStart(bucket) ?? parseMonthStart(bucket);
+  return parseDayBucket(bucket) ?? parseIsoWeekMonday(bucket) ?? parseMonthStart(bucket);
 }
 
 export function bucketEndDate(bucket: string, coveredEnd?: string): Date | null {
@@ -48,7 +45,7 @@ export function bucketEndDate(bucket: string, coveredEnd?: string): Date | null 
     const parsed = parseISO(coveredEnd);
     if (!Number.isNaN(parsed.getTime())) return parsed;
   }
-  const weekStart = parseWeekStart(bucket);
+  const weekStart = parseIsoWeekMonday(bucket);
   if (weekStart) {
     const end = new Date(weekStart);
     end.setDate(end.getDate() + 6);
@@ -58,37 +55,55 @@ export function bucketEndDate(bucket: string, coveredEnd?: string): Date | null 
   if (monthStart) {
     return new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
   }
-  return null;
+  return parseDayBucket(bucket);
 }
 
-/** Two-line axis label: primary row + optional end-date row. */
+/** Compact range for axis secondary line and tooltips. */
+export function formatBucketDateRange(start: Date, end: Date): string {
+  const sameDay =
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth() &&
+    start.getDate() === end.getDate();
+  if (sameDay) return format(start, 'MMM d, yyyy');
+
+  const sameYear = start.getFullYear() === end.getFullYear();
+  const sameMonth = sameYear && start.getMonth() === end.getMonth();
+  if (sameMonth) {
+    return `${format(start, 'MMM d')} – ${format(end, 'd, yyyy')}`;
+  }
+  if (sameYear) {
+    return `${format(start, 'MMM d')} – ${format(end, 'MMM d, yyyy')}`;
+  }
+  return `${format(start, 'MMM d, yyyy')} – ${format(end, 'MMM d, yyyy')}`;
+}
+
+/** Two-line axis label: primary row + optional date-range row. */
 export function formatBucketTickLines(
   bucket: string,
   grain?: Grain,
   coveredStart?: string,
   coveredEnd?: string,
 ): BucketTickLines {
+  const start = bucketStartDate(bucket, coveredStart);
+  const end = bucketEndDate(bucket, coveredEnd);
+
   if (grain === 'Weekly') {
-    const weekNum = parseWeekNumber(bucket);
-    const end = bucketEndDate(bucket, coveredEnd);
+    const weekNum = parseWeekNumber(bucket) ?? (start ? getISOWeek(start) : null);
     return {
       primary: weekNum != null ? `Week ${weekNum}` : bucket,
-      secondary: end ? format(end, 'MMM d, yyyy') : undefined,
+      secondary: start && end ? formatBucketDateRange(start, end) : undefined,
     };
   }
 
   if (grain === 'Monthly') {
-    const start = bucketStartDate(bucket, coveredStart);
-    const end = bucketEndDate(bucket, coveredEnd);
     return {
       primary: start ? format(start, 'MMMM yyyy') : bucket,
-      secondary: end ? format(end, 'MMM d, yyyy') : undefined,
+      secondary: start && end ? formatBucketDateRange(start, end) : undefined,
     };
   }
 
-  const day = bucketStartDate(bucket, coveredStart ?? bucket);
   return {
-    primary: day ? format(day, 'MMM d, yyyy') : bucket,
+    primary: start ? format(start, 'MMM d, yyyy') : bucket,
   };
 }
 
@@ -104,10 +119,32 @@ export function formatBucketTooltipLabel(
   coveredStart?: string,
   coveredEnd?: string,
 ): string {
-  const lines = formatBucketTickLines(bucket, grain, coveredStart, coveredEnd);
-  if (grain === 'Weekly' || grain === 'Monthly') {
-    return lines.secondary ? `${lines.primary} · ends ${lines.secondary}` : lines.primary;
+  const start = bucketStartDate(bucket, coveredStart);
+  const end = bucketEndDate(bucket, coveredEnd);
+
+  if (grain === 'Weekly') {
+    const weekNum = parseWeekNumber(bucket) ?? (start ? getISOWeek(start) : null);
+    if (start && end) {
+      const range = formatBucketDateRange(start, end);
+      return weekNum != null ? `Week ${weekNum}: ${range}` : range;
+    }
+    return weekNum != null ? `Week ${weekNum}` : bucket;
   }
+
+  if (grain === 'Monthly') {
+    if (start && end) {
+      const range = formatBucketDateRange(start, end);
+      const month = format(start, 'MMMM yyyy');
+      return `${month}: ${range}`;
+    }
+  }
+
+  if (start && end && grain === 'Daily') {
+    return format(start, 'MMM d, yyyy');
+  }
+
+  const lines = formatBucketTickLines(bucket, grain, coveredStart, coveredEnd);
+  if (lines.secondary) return `${lines.primary} · ${lines.secondary}`;
   return lines.primary;
 }
 

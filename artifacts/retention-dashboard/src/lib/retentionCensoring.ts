@@ -23,6 +23,7 @@ export interface RetentionHorizon {
   censored?: number | null;
   totalActiveInBucket?: number | null;
   totalNuuInBucket?: number | null;
+  totalOuuInBucket?: number | null;
 }
 
 export interface RetentionDisplayContext {
@@ -44,7 +45,7 @@ export function parseHorizonDays(horizonKey: string): number | null {
 /** Fixed bucket base before horizon censoring (Rolling §3: same for every N in a bucket). */
 export function retentionBucketBase(horizon: RetentionHorizon | null | undefined): number | null {
   if (!horizon) return null;
-  const explicit = horizon.totalActiveInBucket ?? horizon.totalNuuInBucket;
+  const explicit = horizon.totalActiveInBucket ?? horizon.totalNuuInBucket ?? horizon.totalOuuInBucket;
   if (explicit != null && explicit > 0) return explicit;
   const cohort = horizon.totalCohort ?? 0;
   const censored = horizon.censored ?? 0;

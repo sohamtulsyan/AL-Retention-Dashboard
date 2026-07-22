@@ -2,27 +2,30 @@ import { formatBucketTickLines } from '@/lib/bucketLabels';
 
 type Grain = 'Daily' | 'Weekly' | 'Monthly' | string | undefined;
 
-export interface BucketCoveredRange {
-  start?: string;
-  end?: string;
+export interface BucketChartRow {
+  bucket: string;
+  coveredStart?: string;
+  coveredEnd?: string;
 }
 
 interface TickProps {
   x?: number;
   y?: number;
   payload?: { value?: string };
-  index?: number;
 }
 
+/** Axis tick that resolves covered dates by bucket key (not array index). */
 export function createBucketAxisTick(
   grain: Grain,
-  coveredRangeAt: (index: number) => BucketCoveredRange | undefined,
+  rows: BucketChartRow[],
   fontSize = 11,
 ) {
-  return function BucketAxisTick({ x = 0, y = 0, payload, index = 0 }: TickProps) {
-    const bucket = payload?.value ?? '';
-    const range = coveredRangeAt(index) ?? {};
-    const lines = formatBucketTickLines(bucket, grain, range.start, range.end);
+  const byBucket = new Map(rows.map((row) => [row.bucket, row]));
+
+  return function BucketAxisTick({ x = 0, y = 0, payload }: TickProps) {
+    const bucket = String(payload?.value ?? '');
+    const row = byBucket.get(bucket);
+    const lines = formatBucketTickLines(bucket, grain, row?.coveredStart, row?.coveredEnd);
 
     return (
       <g transform={`translate(${x},${y})`}>

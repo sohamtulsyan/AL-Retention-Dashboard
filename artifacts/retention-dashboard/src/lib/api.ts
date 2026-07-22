@@ -156,10 +156,10 @@ export const useCreateJob = () => {
     mutationFn: createJob,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
-      toast.success('Job queued successfully');
+      toast.success('Pipeline run queued successfully');
     },
     onError: (err: Error) => {
-      toast.error('Failed to queue job: ' + err.message);
+      toast.error('Failed to queue pipeline run: ' + err.message);
     },
   });
 };
@@ -184,6 +184,14 @@ export const useNuuRetention = () => {
   return useQuery<any>({
     queryKey: ['nuu-retention'],
     queryFn: () => fetcher('/api/v1/results/nuu-retention'),
+    retry: false,
+  });
+};
+
+export const useOuuRetention = () => {
+  return useQuery<any>({
+    queryKey: ['ouu-retention'],
+    queryFn: () => fetcher('/api/v1/results/ouu-retention'),
     retry: false,
   });
 };

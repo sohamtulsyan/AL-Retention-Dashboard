@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useMemo } from 'react';
 import { bucketAxisBottomMargin, formatBucketTooltipLabel } from '@/lib/bucketLabels';
-import { createBucketAxisTick } from '@/lib/bucketAxisTick';
+import { createBucketAxisTick, type BucketChartRow } from '@/lib/bucketAxisTick';
 import { RetentionCensoringNote } from '@/components/charts/RetentionCensoringNote';
 import {
   filterEdgeCensoredBuckets,
@@ -37,7 +37,7 @@ function RetentionChart({
 
   const chartData = useMemo(() => {
     return filterEdgeCensoredBuckets(buckets).map((b: any) => {
-      const row: Record<string, string | number | null> = {
+      const row: BucketChartRow & Record<string, string | number | null> = {
         bucket: b.bucket,
         coveredStart: b.coveredStart,
         coveredEnd: b.coveredEnd,
@@ -51,6 +51,7 @@ function RetentionChart({
         };
         row[key] = toRetentionPercent(h, ctx);
         row[`${key}_cohort`] = isRetentionHorizonDisplayable(h, ctx) ? (h?.totalCohort ?? null) : null;
+        row[`${key}_retained`] = isRetentionHorizonDisplayable(h, ctx) ? (h?.retainedCohort ?? null) : null;
       }
       return row;
     });
@@ -65,39 +66,39 @@ function RetentionChart({
 
   const axisBottom = bucketAxisBottomMargin(grain);
   const bucketTick = useMemo(
-    () =>
-      createBucketAxisTick(grain, (index: number) => ({
-        start: chartData[index]?.coveredStart as string | undefined,
-        end: chartData[index]?.coveredEnd as string | undefined,
-      })),
+    () => createBucketAxisTick(grain, chartData),
     [grain, chartData],
   );
 
   const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const coveredStart = payload[0]?.payload?.coveredStart as string | undefined;
-      const coveredEnd = payload[0]?.payload?.coveredEnd as string | undefined;
-      return (
-        <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-          <p className="font-mono text-sm text-muted-foreground mb-2">
-            {formatBucketTooltipLabel(String(label), grain, coveredStart, coveredEnd)}
-          </p>
-          {payload.map((p: any, i: number) => {
-            const cohort = p.payload[`${p.dataKey}_cohort`];
-            if (p.value == null) return null;
-            return (
-              <div key={i} className="flex justify-between gap-4 font-mono text-sm mb-1">
-                <span style={{ color: p.color }}>
-                  {p.name}: {p.value}%
-                </span>
-                <span className="text-muted-foreground text-xs">Cohort: {cohort}</span>
-              </div>
-            );
-          })}
-        </div>
-      );
-    }
-    return null;
+    if (!active || !payload?.length) return null;
+    const coveredStart = payload[0]?.payload?.coveredStart as string | undefined;
+    const coveredEnd = payload[0]?.payload?.coveredEnd as string | undefined;
+    return (
+      <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
+        <p className="font-mono text-sm text-muted-foreground mb-2">
+          {formatBucketTooltipLabel(String(label), grain, coveredStart, coveredEnd)}
+        </p>
+        {payload.map((p: any, i: number) => {
+          const cohort = p.payload[`${p.dataKey}_cohort`];
+          const retained = p.payload[`${p.dataKey}_retained`];
+          if (p.value == null) return null;
+          const abs =
+            retained != null && cohort != null
+              ? ` (${Number(retained).toLocaleString()}/${Number(cohort).toLocaleString()})`
+              : cohort != null
+                ? ` (cohort ${Number(cohort).toLocaleString()})`
+                : '';
+          return (
+            <div key={i} className="flex justify-between gap-4 font-mono text-sm mb-1">
+              <span style={{ color: p.color }}>
+                {p.name}: {p.value}%{abs}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   if (buckets.length === 0) {
@@ -248,7 +249,7 @@ export default function Retention() {
         </Tabs>
       ) : (
         <div className="text-center p-12 border rounded-lg border-dashed">
-          <p className="text-muted-foreground">No analysis data found. Run an analyze/pipeline job first.</p>
+          <p className="text-muted-foreground">No analysis data found. Run the pipeline first.</p>
         </div>
       )}
     </div>

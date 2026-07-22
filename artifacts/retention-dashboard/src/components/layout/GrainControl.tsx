@@ -36,25 +36,20 @@ export function GrainControl() {
 
     try {
       await updateConfig.mutateAsync({ grain: grain as Config['grain'] });
+      const pipelineJob = await createJob({ type: 'pipeline', params: { grain } });
+      const pipelineResult = await waitForJob(pipelineJob.id);
 
-      const analyzeJob = await createJob({ type: 'analyze', params: { grain } });
-      const nuuJob = await createJob({ type: 'nuu_retention', params: { grain } });
-
-      const [analyzeResult, nuuResult] = await Promise.all([
-        waitForJob(analyzeJob.id),
-        waitForJob(nuuJob.id),
-      ]);
-
-      const failures = [analyzeResult, nuuResult].filter((j) => j.status === 'failed');
-      if (failures.length > 0) {
-        const detail = failures.map((j) => `${j.type}: ${j.error || 'failed'}`).join('; ');
-        toast.error(`Grain reload failed — ${detail}`, { id: toastId });
+      if (pipelineResult.status === 'failed') {
+        toast.error(`Grain reload failed: ${pipelineResult.error || 'pipeline failed'}`, {
+          id: toastId,
+        });
         return;
       }
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['analysis'] }),
         queryClient.invalidateQueries({ queryKey: ['nuu-retention'] }),
+        queryClient.invalidateQueries({ queryKey: ['ouu-retention'] }),
         queryClient.invalidateQueries({ queryKey: ['signup-fraction'] }),
         queryClient.invalidateQueries({ queryKey: ['nuu-signup-fraction'] }),
         queryClient.invalidateQueries({ queryKey: ['charts'] }),

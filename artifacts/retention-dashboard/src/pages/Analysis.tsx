@@ -5,7 +5,58 @@ import { Badge } from '@/components/ui/badge';
 import { useMemo } from 'react';
 import { bucketAxisBottomMargin } from '@/lib/bucketLabels';
 import { createBucketAxisTick } from '@/lib/bucketAxisTick';
+import { BucketChartTooltip } from '@/components/charts/BucketChartTooltip';
 import { filterEdgeCensoredBuckets } from '@/lib/retentionCensoring';
+import { formatBucketTooltipLabel } from '@/lib/bucketLabels';
+
+function toFractionPct(v: unknown): number | null {
+  if (v == null || v === 'N/A') return null;
+  const n = Number(v);
+  return Number.isNaN(n) ? null : +n.toFixed(2);
+}
+
+function PlayStateTooltip({
+  active,
+  payload,
+  label,
+  grain,
+}: {
+  active?: boolean;
+  payload?: Array<{ name?: string; color?: string; payload?: Record<string, unknown> }>;
+  label?: string | number;
+  grain?: string;
+}) {
+  if (!active || !payload?.length) return null;
+  const row = payload[0]?.payload ?? {};
+  const bucket = String(label ?? row.bucket ?? '');
+  const states = [
+    { key: 'loaded', label: 'Loaded', count: row.loaded, pct: row.loadedPct, color: 'hsl(var(--muted))' },
+    { key: 'solving', label: 'Solving', count: row.solving, pct: row.solvingPct, color: 'hsl(var(--chart-2))' },
+    { key: 'completed', label: 'Completed', count: row.completed, pct: row.completedPct, color: 'hsl(var(--primary))' },
+  ];
+
+  return (
+    <div className="bg-card border border-border rounded-lg p-3 shadow-lg min-w-[200px]">
+      <p className="font-mono text-sm text-muted-foreground mb-2">
+        {formatBucketTooltipLabel(bucket, grain, row.coveredStart as string, row.coveredEnd as string)}
+      </p>
+      {typeof row.totalPlays === 'number' && (
+        <p className="font-mono text-xs text-muted-foreground mb-2">
+          {row.totalPlays.toLocaleString()} total plays
+        </p>
+      )}
+      {states.map((s) => (
+        <div key={s.key} className="flex justify-between gap-6 font-mono text-sm mb-1">
+          <span style={{ color: s.color }}>{s.label}</span>
+          <span>
+            {Number(s.count ?? 0).toLocaleString()}
+            {s.pct != null ? ` (${s.pct}%)` : ''}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
 import {
   BarChart,
   Bar,
@@ -18,16 +69,6 @@ import {
   Legend,
   ComposedChart,
 } from 'recharts';
-
-const tooltipStyle = {
-  contentStyle: {
-    backgroundColor: 'hsl(var(--card))',
-    borderColor: 'hsl(var(--border))',
-    borderRadius: '8px',
-  },
-  itemStyle: { fontFamily: 'var(--app-font-mono)' },
-  labelStyle: { color: 'hsl(var(--muted-foreground))', marginBottom: '8px' },
-};
 
 export default function Analysis() {
   const { data: analysis, isLoading, error } = useAnalysis();
@@ -60,6 +101,10 @@ export default function Analysis() {
         loaded: d.loadedCount ?? 0,
         solving: d.solvingCount ?? 0,
         completed: d.completedCount ?? 0,
+        totalPlays: d.totalPlays ?? 0,
+        loadedPct: toFractionPct(d.loadedFractionPercent),
+        solvingPct: toFractionPct(d.solvingFractionPercent),
+        completedPct: toFractionPct(d.completedFractionPercent),
       })),
     };
   }, [analysis]);
@@ -67,21 +112,16 @@ export default function Analysis() {
   const grain = analysis?.grain;
   const axisBottom = bucketAxisBottomMargin(grain);
 
-  const rangeAt = (rows: { coveredStart?: string; coveredEnd?: string }[]) => (index: number) => ({
-    start: rows[index]?.coveredStart,
-    end: rows[index]?.coveredEnd,
-  });
-
   const userGrowthTick = useMemo(
-    () => createBucketAxisTick(grain, rangeAt(chartData.userGrowth)),
+    () => createBucketAxisTick(grain, chartData.userGrowth),
     [grain, chartData.userGrowth],
   );
   const engagementTick = useMemo(
-    () => createBucketAxisTick(grain, rangeAt(chartData.engagement)),
+    () => createBucketAxisTick(grain, chartData.engagement),
     [grain, chartData.engagement],
   );
   const playStateTick = useMemo(
-    () => createBucketAxisTick(grain, rangeAt(chartData.playState)),
+    () => createBucketAxisTick(grain, chartData.playState),
     [grain, chartData.playState],
   );
 
@@ -143,7 +183,7 @@ export default function Analysis() {
                         axisLine={false}
                         tickFormatter={(v) => (v >= 1000 ? `${v / 1000}k` : v)}
                       />
-                      <RechartsTooltip {...tooltipStyle} />
+                      <RechartsTooltip content={<BucketChartTooltip grain={grain} />} />
                       <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Active Users" />
                     </BarChart>
                   </ResponsiveContainer>
@@ -190,7 +230,7 @@ export default function Analysis() {
                         axisLine={false}
                         tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v)}
                       />
-                      <RechartsTooltip {...tooltipStyle} />
+                      <RechartsTooltip content={<BucketChartTooltip grain={grain} />} />
                       <Legend />
                       <Bar
                         yAxisId="right"
@@ -220,7 +260,9 @@ export default function Analysis() {
           <Card>
             <CardHeader>
               <CardTitle>Play State Distribution</CardTitle>
-              <CardDescription>Funnel conversion (Loaded → Solving → Completed)</CardDescription>
+              <CardDescription>
+                Funnel counts (stacked) and state rates % — Loaded → Solving → Completed
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {chartData.playState.length === 0 ? (
@@ -228,7 +270,7 @@ export default function Analysis() {
               ) : (
                 <div className="h-[350px] w-full mt-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData.playState} margin={{ top: 10, right: 30, left: 0, bottom: axisBottom }}>
+                    <ComposedChart data={chartData.playState} margin={{ top: 10, right: 30, left: 0, bottom: axisBottom }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                       <XAxis
                         dataKey="bucket"
@@ -239,23 +281,68 @@ export default function Analysis() {
                         tick={playStateTick}
                       />
                       <YAxis
+                        yAxisId="count"
                         stroke="hsl(var(--muted-foreground))"
                         fontSize={12}
                         tickLine={false}
                         axisLine={false}
+                        tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v)}
                       />
-                      <RechartsTooltip {...tooltipStyle} />
+                      <YAxis
+                        yAxisId="pct"
+                        orientation="right"
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        domain={[0, 100]}
+                        tickFormatter={(v) => `${v}%`}
+                      />
+                      <RechartsTooltip content={<PlayStateTooltip grain={grain} />} />
                       <Legend />
-                      <Bar dataKey="loaded" stackId="a" fill="hsl(var(--muted))" name="Loaded" />
-                      <Bar dataKey="solving" stackId="a" fill="hsl(var(--chart-2))" name="Solving" />
+                      <Bar yAxisId="count" dataKey="loaded" stackId="a" fill="hsl(var(--muted))" name="Loaded" />
+                      <Bar yAxisId="count" dataKey="solving" stackId="a" fill="hsl(var(--chart-2))" name="Solving" />
                       <Bar
+                        yAxisId="count"
                         dataKey="completed"
                         stackId="a"
                         fill="hsl(var(--primary))"
                         name="Completed"
                         radius={[4, 4, 0, 0]}
                       />
-                    </BarChart>
+                      <Line
+                        yAxisId="pct"
+                        type="monotone"
+                        dataKey="loadedPct"
+                        stroke="hsl(var(--muted-foreground))"
+                        strokeWidth={2}
+                        strokeDasharray="4 4"
+                        dot={false}
+                        connectNulls={false}
+                        name="Loaded %"
+                      />
+                      <Line
+                        yAxisId="pct"
+                        type="monotone"
+                        dataKey="solvingPct"
+                        stroke="hsl(var(--chart-2))"
+                        strokeWidth={2}
+                        dot={false}
+                        connectNulls={false}
+                        name="Solving %"
+                      />
+                      <Line
+                        yAxisId="pct"
+                        type="monotone"
+                        dataKey="completedPct"
+                        stroke="hsl(var(--primary))"
+                        strokeWidth={3}
+                        dot={false}
+                        activeDot={{ r: 5 }}
+                        connectNulls={false}
+                        name="Completed %"
+                      />
+                    </ComposedChart>
                   </ResponsiveContainer>
                 </div>
               )}
@@ -264,7 +351,7 @@ export default function Analysis() {
         </div>
       ) : (
         <div className="text-center p-12 border rounded-lg border-dashed">
-          <p className="text-muted-foreground">No analysis data found. Run an analyze/pipeline job first.</p>
+          <p className="text-muted-foreground">No analysis data found. Run the pipeline first.</p>
         </div>
       )}
     </div>

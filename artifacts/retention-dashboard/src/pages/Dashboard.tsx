@@ -3,7 +3,6 @@ import { useAnalysis, useJobs, useCreateJob, useCoverage, getApiUrl } from '@/li
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Activity, Clock, Play, AlertCircle, Database, CheckCircle2 } from 'lucide-react';
-import { Link } from 'wouter';
 import { filterEdgeCensoredBuckets, isRetentionHorizonDisplayable } from '@/lib/retentionCensoring';
 import { format } from 'date-fns';
 
@@ -171,8 +170,8 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Jobs</CardTitle>
-            <CardDescription>Live polling status</CardDescription>
+            <CardTitle>Recent Pipeline Runs</CardTitle>
+            <CardDescription>Live status for end-to-end recomputes</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {jobsLoading ? (
@@ -189,7 +188,7 @@ export default function Dashboard() {
                     className="flex items-center justify-between p-3 rounded-lg border bg-card/50"
                   >
                     <div>
-                      <div className="font-mono text-sm">{job.type}</div>
+                      <div className="font-mono text-sm">pipeline</div>
                       <div className="text-xs text-muted-foreground">
                         {job.createdAt
                           ? format(new Date(job.createdAt), 'MMM d, HH:mm:ss')
@@ -199,14 +198,11 @@ export default function Dashboard() {
                     <JobStatusBadge status={job.status} />
                   </div>
                 ))}
-                <Button variant="outline" className="w-full mt-2 font-mono text-xs" asChild>
-                  <Link href="/jobs">VIEW ALL JOBS</Link>
-                </Button>
               </div>
             ) : (
               <div className="text-center p-4 border rounded-lg border-dashed">
                 <Database className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground mb-4">No recent jobs found</p>
+                <p className="text-sm text-muted-foreground mb-4">No recent pipeline runs found</p>
                 <Button size="sm" onClick={handleRunPipeline} disabled={createJob.isPending}>
                   Trigger Initial Sync
                 </Button>

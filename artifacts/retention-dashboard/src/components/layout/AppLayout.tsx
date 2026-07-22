@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Link, useLocation } from "wouter"
-import { Activity, BarChart2, Settings, FileBox, LineChart, Terminal, Zap, HardDrive } from "lucide-react"
+import { Activity, BarChart2, Settings, FileBox, LineChart, Terminal, HardDrive, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { GrainControl } from "@/components/layout/GrainControl"
 
@@ -13,7 +13,7 @@ const navItems = [
   { name: "Analysis", path: "/analysis", icon: BarChart2 },
   { name: "Retention", path: "/retention", icon: Activity },
   { name: "NUU & Signup", path: "/nuu", icon: LineChart },
-  { name: "Job Runner", path: "/jobs", icon: Zap },
+  { name: "OUU", path: "/ouu", icon: Users },
   { name: "Artifacts", path: "/charts", icon: FileBox },
   { name: "Settings", path: "/config", icon: Settings },
 ]
@@ -69,7 +69,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         <div className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <div className="flex items-center justify-between gap-4 px-6 py-3 md:px-8 max-w-7xl mx-auto">
             <p className="text-xs text-muted-foreground hidden sm:block">
-              Analysis grain applies to all metrics including NUU. Changing it recomputes results.
+              Analysis grain applies to all metrics including NUU and OUU. Changing it recomputes results.
             </p>
             <GrainControl />
           </div>
